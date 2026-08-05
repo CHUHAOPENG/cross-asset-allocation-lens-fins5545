@@ -376,3 +376,40 @@ It also added four report tables:
 - `scripts/build_report_artifacts.py`
 - `scripts/make_submission_zip.sh`
 - `tests/test_report_artifacts.py`
+
+## Post-review report correction
+
+The post-review audit found that `report/FINAL_REPORT.md` and `README.md` described an obsolete five-stage tab structure (`Start Here`, `Compare Funds`, plural `Fund Fact Sheets`, and a combined `Sentiment & Fusion` area) rather than the labels actually declared by `streamlit_app.py`. Both documents now use the exact tabs `Fund Explorer`, `Fund Fact Sheet`, `Allocation Lab`, `Sentiment Lab`, and `Fusion Evidence`, with scope descriptions reconciled to the controls and evidence in each tab. The app code and tab labels were not changed.
+
+The report builder now creates `results/figures/report_all_sector_sentiment_small_multiples.png`, a 5 × 2 small-multiple appendix exhibit using `finance_vader` only for Comm, Consumer, Energy, Financials, Healthcare, Industrials, Materials, RealEstate, Tech, and Utilities. Every panel uses the common 0–100 scale and historical period 2020-01-02 to 2023-12-29. The 10,060-row input contains 238 missing compound values and exactly 238 missing index values; no missing value was replaced with neutral 50. Materials remains the detailed worked example, while the appendix exhibit documents that the standalone index covers all ten equity sectors without adding a predictive claim. The new exhibit is also recorded in `results/tables/report_exhibit_catalog.csv`.
+
+`report/PDF_LAYOUT_GUIDE.md` records the 10-page narrative limit, suggested main-body evidence, appendix ordering for every report exhibit, verified title-page fields, pagination/caption/source-note rules, and the checks required before CHUHAO PENG may export a personally reviewed `report/report.pdf`. No PDF was created or claimed.
+
+Status wording now records that the Markdown report source and clean package are completed and technically reviewed. CHUHAO PENG's personal rewrite/approval, the course-formatted PDF, GitHub push, public-repository setting, Streamlit deployment, and Moodle submission remain pending.
+
+Validation results:
+
+- report builder: passed; 10 report figures and 4 report tables validated;
+- focused report tests: `5 passed`;
+- full test suite: `82 passed in 14.30s`;
+- Interaction 004 frozen analytical hashes: `20/20` passed;
+- finance-VADER figure input: 10 sectors, 10,060 rows, 238 missing compound values, 238 missing index values, and 0 missing values replaced with 50;
+- report local references: 25 checked, 0 missing;
+- README/report tab names: exact match to the five-name `st.tabs` declaration in `streamlit_app.py`;
+- unexpected tracked canonical-result changes: 0; only the report exhibit catalog changed and the new report figure was added under `results/`;
+- `git diff --check`: passed;
+- the first hand-in check found one root `.DS_Store`; that macOS metadata file was removed and the check was repeated;
+- the absence of `report/report.pdf` remains an expected non-blocking reminder because this correction explicitly does not create or claim a final PDF.
+
+Exact changed-file list for this post-review correction:
+
+- `README.md`
+- `ai/AI_NOTES.md`
+- `ai/interaction_006_final_report_and_submission_polish.md`
+- `context/PROJECT_DECISIONS.md`
+- `report/FINAL_REPORT.md`
+- `report/PDF_LAYOUT_GUIDE.md`
+- `results/figures/report_all_sector_sentiment_small_multiples.png`
+- `results/tables/report_exhibit_catalog.csv`
+- `scripts/build_report_artifacts.py`
+- `tests/test_report_artifacts.py`

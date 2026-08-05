@@ -1,6 +1,6 @@
 # Project B predeclared decisions
 
-Status: portfolio, sentiment, fusion, and app are locked and reviewed through Interaction 005 plus the post-review visual correction. The fixed overlay produced a modest negative result in this OOS sample and higher turnover than base Equity Risk Parity. This remains descriptive evidence, not proof for or against sentiment predictability, and it does not justify retuning. Final reporting and hand-in packaging are now being completed; deployment and the student's final personal report review remain pending.
+Status: portfolio, sentiment, fusion, and app are locked and reviewed through Interaction 005 plus the post-review visual correction. The fixed overlay produced a modest negative result in this OOS sample and higher turnover than base Equity Risk Parity. This remains descriptive evidence, not proof for or against sentiment predictability, and it does not justify retuning. The Markdown report source and clean submission package are completed and technically reviewed. CHUHAO PENG's personal rewrite and approval, the course-formatted PDF, GitHub push, public-repository setting, Streamlit deployment, and Moodle submission remain pending; no final student approval is claimed.
 
 ## Product
 

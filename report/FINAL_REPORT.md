@@ -110,6 +110,8 @@ Materials is used as the report example because its gaps make the missingness po
 
 ![Figure 5. Materials finance-extended sector sentiment index with missing dates preserved.](../results/figures/report_materials_sentiment_index.png)
 
+Materials remains the detailed worked example, while Appendix Figure A1 (`report_all_sector_sentiment_small_multiples.png`) confirms that the standalone finance-VADER index covers all ten equity sectors with the same gap-preserving treatment; it does not add a predictive claim.
+
 Figure 6 separates description from a tradable signal. For each sector and model, a causal expanding z-score uses information through the source date, requires at least 252 available historical sector observations, and uses sample standard deviation. That completed signal is shifted by exactly one observed equity day. If later sector observations are wholly missing, the last signal may carry for ages 1–5 while effective coverage decays as `source coverage × (6 - age) / 6`; at age 6 it expires. Materials has 724 non-missing tradable observations, including 36 carried observations. Full-sample descriptive z-scores never enter this signal.
 
 ![Figure 6. Lagged Materials tradable sentiment signal and bounded carry events.](../results/figures/report_materials_trading_signal.png)
@@ -156,11 +158,11 @@ The correct conclusion is narrow: **this predeclared overlay did not add net val
 
 The Streamlit application is a presentation layer over committed outputs. Its five tabs are:
 
-1. **Start Here** — product scope, decision boundaries, and investor disclosures.
-2. **Compare Funds** — all 13 funds, net metrics, and return–risk comparison.
-3. **Fund Fact Sheets** — one fact sheet per fund with methodology, OOS dates, performance, growth, drawdown, turnover, and latest target weights.
-4. **Allocation Lab** — two to six selected funds, non-negative weights summing to 100%, and either Buy & Hold or Monthly Reset over the exact common OOS date intersection.
-5. **Sentiment & Fusion** — missingness-aware sector evidence and the unrevised negative fusion result.
+1. **Fund Explorer** — filter the 13 funds by group, switch between net and gross metrics, compare return versus volatility, and inspect selected growth and drawdown paths.
+2. **Fund Fact Sheet** — inspect one fund's OOS dates, metrics, gross/net growth, latest historical target weights, target-weight history, methodology note, and downloadable target table.
+3. **Allocation Lab** — assign non-negative weights to two to six funds and simulate Buy & Hold or Monthly Reset over their exact common finite OOS intersection; the tab does not optimise or recommend weights.
+4. **Sentiment Lab** — select sector and VADER model, inspect the gap-preserving descriptive index and news coverage, optionally show the causal source-day z-score, and review the latest sector snapshot and timing disclosure.
+5. **Fusion Evidence** — compare base and augmented Equity Risk Parity performance, drawdown, turnover, cost, sector multipliers, and latest target changes while keeping the unrevised negative result visible.
 
 Buy & Hold compounds independent initial fund sleeves and permits their weights to drift. Monthly Reset resets sleeves to the selected allocation on the first common-period date in each calendar month. Neither mode optimises or recommends the weights.
 
@@ -224,3 +226,9 @@ Key evidence files are:
 - [`run_manifest.csv`](../results/tables/run_manifest.csv) — source checksum, environment, methodology constants, and canonical output hashes.
 
 All reported results are historical OOS evidence from the supplied dataset. They are not current, causal, or an investment recommendation.
+
+## Appendix A. All equity-sector sentiment indices
+
+Appendix Figure A1 displays the finance-VADER standalone index for all ten equity sectors on the common 0–100 scale from 2020-01-02 to 2023-12-29. Missing sector sentiment remains a visible gap rather than a neutral value of 50; the figure documents coverage only and does not establish predictability.
+
+![Appendix Figure A1. Finance-VADER sentiment indices for all ten equity sectors, with genuine missing gaps preserved.](../results/figures/report_all_sector_sentiment_small_multiples.png)

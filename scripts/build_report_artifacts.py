@@ -64,6 +64,18 @@ EQUITY_METHOD_FUNDS = [
 ]
 SENTIMENT_SECTOR = "Materials"
 SENTIMENT_MODEL = "finance_vader"
+EXPECTED_EQUITY_SECTORS = (
+    "Comm",
+    "Consumer",
+    "Energy",
+    "Financials",
+    "Healthcare",
+    "Industrials",
+    "Materials",
+    "RealEstate",
+    "Tech",
+    "Utilities",
+)
 
 REPORT_FIGURES = [
     "report_fund_return_volatility.png",
@@ -73,6 +85,7 @@ REPORT_FIGURES = [
     "report_materials_sentiment_index.png",
     "report_materials_trading_signal.png",
     "report_materials_coverage.png",
+    "report_all_sector_sentiment_small_multiples.png",
     "report_fusion_latest_weight_changes.png",
     "report_allocation_example.png",
 ]
@@ -445,6 +458,66 @@ def _sentiment_figures(artifacts: app_utils.AppArtifacts) -> None:
         top=0.86,
     )
 
+    all_sectors = _all_sector_sentiment_input(artifacts)
+    sample_start = all_sectors["date"].min().date().isoformat()
+    sample_end = all_sectors["date"].max().date().isoformat()
+    figure, axes = plt.subplots(
+        5, 2, figsize=(12, 10.6), sharex=True, sharey=True,
+    )
+    for axis, sector in zip(axes.flat, EXPECTED_EQUITY_SECTORS, strict=True):
+        rows = all_sectors.loc[all_sectors["sector"].eq(sector)]
+        axis.plot(
+            rows["date"], rows["index_0_100"], color=BLUE, linewidth=1.0,
+        )
+        axis.axhline(50, color=INK, linestyle="--", linewidth=0.75, alpha=0.75)
+        axis.set_title(sector, loc="left", fontsize=9.5, fontweight="bold")
+        axis.set_ylim(0, 100)
+        axis.set_yticks([0, 50, 100])
+        axis.xaxis.set_major_locator(mdates.YearLocator())
+        axis.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+        _style_axis(axis)
+        axis.tick_params(labelsize=7.5)
+    for axis in axes[:, 0]:
+        axis.set_ylabel("Index (0–100)", fontsize=8)
+    for axis in axes[-1, :]:
+        axis.set_xlabel("Mapped equity date", fontsize=8)
+    figure.suptitle(
+        "All equity-sector finance sentiment indices",
+        x=0.01, ha="left", fontsize=18, fontweight="bold", color=INK,
+    )
+    figure.text(
+        0.01, 0.94,
+        f"Finance-extended VADER only · {sample_start} to {sample_end} · common 0–100 scale; gaps are missing supplied news.",
+        fontsize=10.2, color=MUTED,
+    )
+    _finish_figure(
+        figure,
+        FIGURES / "report_all_sector_sentiment_small_multiples.png",
+        source_note="Source: results/data/sector_sentiment_index.csv. Ten equity sectors; missing compound values remain gaps and are never replaced with neutral 50.",
+        top=0.90,
+    )
+
+
+def _all_sector_sentiment_input(
+    artifacts: app_utils.AppArtifacts,
+) -> pd.DataFrame:
+    frame = artifacts.sector_sentiment_index.loc[
+        artifacts.sector_sentiment_index["model"].eq(SENTIMENT_MODEL)
+    ].copy()
+    observed_sectors = set(frame["sector"].unique())
+    expected_sectors = set(EXPECTED_EQUITY_SECTORS)
+    if observed_sectors != expected_sectors:
+        raise AssertionError(
+            "all-sector report input must contain the exact ten equity sectors: "
+            f"observed={sorted(observed_sectors)}"
+        )
+    if frame.duplicated(["date", "sector", "model"]).any():
+        raise AssertionError("all-sector report input has duplicate date-sector-model keys")
+    missing_compound = frame["compound_mean"].isna()
+    if not frame.loc[missing_compound, "index_0_100"].isna().all():
+        raise AssertionError("missing sector sentiment must remain missing, not neutral 50")
+    return frame.sort_values(["sector", "date"], kind="mergesort").reset_index(drop=True)
+
 
 def _fusion_weight_changes(artifacts: app_utils.AppArtifacts) -> None:
     rows = artifacts.fusion_current_holdings.copy()
@@ -558,6 +631,7 @@ def _exhibit_catalog() -> pd.DataFrame:
         {"artifact": "results/figures/report_materials_sentiment_index.png", "report_section": "Sentiment evidence", "question": "What does a coverage-aware sector sentiment history look like?", "chart_type": "Gap-preserving line", "source": "sector_sentiment_index.csv", "supported_claim": "Missing news remains visible rather than being replaced with a neutral score."},
         {"artifact": "results/figures/report_materials_trading_signal.png", "report_section": "Sentiment evidence", "question": "What signal is available for trading after lag and carry?", "chart_type": "Line with carry markers", "source": "sector_sentiment_signal.csv", "supported_claim": "The tradable signal is causal, lagged, and subject to bounded carry."},
         {"artifact": "results/figures/report_materials_coverage.png", "report_section": "Sentiment evidence", "question": "How complete is sector headline coverage?", "chart_type": "Area and line", "source": "sector_sentiment_index.csv", "supported_claim": "Coverage varies materially over time and qualifies the sentiment index."},
+        {"artifact": "results/figures/report_all_sector_sentiment_small_multiples.png", "report_section": "Appendix — sentiment evidence", "question": "Does the standalone finance-sentiment index cover every equity sector?", "chart_type": "Gap-preserving line small multiples", "source": "sector_sentiment_index.csv", "supported_claim": "The finance-VADER index covers all ten equity sectors while genuine missing dates remain visible as gaps."},
         {"artifact": "results/figures/fusion_growth_of_one.png", "report_section": "Fusion evidence", "question": "Did the fixed overlay improve compounded performance?", "chart_type": "Multi-series line", "source": "fund_returns.csv; fusion_comparison.csv", "supported_claim": "The augmented fund ended below the base fund in this OOS sample."},
         {"artifact": "results/figures/fusion_drawdown.png", "report_section": "Fusion evidence", "question": "Did the fixed overlay improve drawdown?", "chart_type": "Multi-series line", "source": "fund_returns.csv; fusion_comparison.csv", "supported_claim": "The augmented net maximum drawdown was slightly deeper."},
         {"artifact": "results/figures/fusion_sector_multiplier_activity.png", "report_section": "Fusion evidence", "question": "When and where did the fixed overlay alter sector exposure?", "chart_type": "Time-series marker plot", "source": "fusion_sector_multipliers.csv", "supported_claim": "The bounded rule generated active and neutral multipliers without retuning."},

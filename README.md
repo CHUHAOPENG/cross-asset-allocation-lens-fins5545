@@ -65,7 +65,13 @@ The exact locked decisions are recorded in `context/PROJECT_DECISIONS.md`. The r
 
 ## Application behavior
 
-The app contains five tabs: Start Here, Compare Funds, Fund Fact Sheets, Allocation Lab, and Sentiment & Fusion. It reads precomputed committed files under `results/` and has no imports from the analytical engines or network layer.
+The app reads precomputed committed files under `results/` and has no imports from the analytical engines or network layer. Its five tabs are exactly:
+
+- **Fund Explorer** — filter and compare all 13 funds on net or gross metrics, return versus volatility, growth, and drawdown.
+- **Fund Fact Sheet** — inspect one fund's OOS metrics, gross/net growth, methodology, latest historical target weights, weight history, and target-table download.
+- **Allocation Lab** — simulate user-specified weights across two to six funds using Buy & Hold or Monthly Reset on the exact common finite OOS period; it does not optimise or recommend weights.
+- **Sentiment Lab** — inspect a selected sector/model's gap-preserving index, coverage, optional causal z-score, latest sector snapshot, and Rule A/lag/missingness disclosure.
+- **Fusion Evidence** — compare base and sentiment-augmented Equity Risk Parity, including net growth, drawdown, turnover, cost, sector multiplier activity, latest target changes, and the unrevised negative result.
 
 The Allocation Lab accepts two to six non-negative fund weights summing to 100% and simulates Buy & Hold or Monthly Reset over the exact common OOS intersection. It does not optimise or recommend an allocation. Fund-level returns include the recorded analytical trading costs, but the simulator applies no additional management fee, tax, or cross-fund transaction cost.
 
