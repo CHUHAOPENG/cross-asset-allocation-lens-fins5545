@@ -1,56 +1,80 @@
 # Student Guide: Deploying Your Streamlit App for Hand-in
 
-The path from a local app to the public URL you submit for Part B. Your
-`<zID>_projectB` folder is its own GitHub repository, and the app entrypoint is
-`streamlit_app.py` at the folder root. The repo stays **private while you work** and
-becomes **public at hand-in** so markers can run it.
+This project folder is a standalone Git repository, and the Streamlit entrypoint
+is `streamlit_app.py` at its root. The app reads committed artifacts under
+`results/`; it does not run an analytical engine, load raw data, or make a network
+request at runtime.
 
-**Who does what:** your AI agent can build the app, run `scripts/check_handin.py`,
-and push the repo. The final deploy on Streamlit Community Cloud is **browser-based
-and needs your own GitHub and Streamlit login**, so you do that step yourself.
+Repository creation, pushing, the public setting, and Streamlit Community Cloud
+deployment remain user-controlled actions. Do not run the commands below until
+CHUHAO PENG has reviewed the Word and PDF reports.
 
 ## What you submit (Part B, Station 4)
 - A **live public Streamlit Community Cloud URL**.
 - A **public GitHub repository** (the contents of your `<zID>_projectB` folder).
-- The repo runs from a clean checkout: raw data loads from the hosted ZIP through
-  `src/data_access.py`, and your precomputed app artifacts are committed under
+- The repo runs from a clean checkout using the committed app artifacts under
   `results/`.
 
 ## Step-by-step
 
-1. **Start from your folder.** You already have `<zID>_projectB` (unzipped from
-   `projectB_starter.zip` and renamed). It contains `streamlit_app.py`,
-   `.streamlit/config.toml`, `requirements.txt`, and `src/data_access.py`.
-2. **Build your app.** Replace the starter `streamlit_app.py` with your real
-   dashboard: a fund picker, each fund's fact sheet (growth of $1, drawdown, Sharpe,
-   holdings), an allocation control, and your sentiment analytics. Load raw data
-   through `src/data_access.py`; do not hard-code laptop paths.
-3. **Keep the app light.** Put modelling in functions and cache with `st.cache_data`.
-   The app must run on the free tier (about one core), so **precompute the slow
-   backtests and the sentiment index, save them under `results/data/`, and have the
-   app load those** rather than recompute. Keep `nltk` out of the app (it lives in
-   `requirements-dev.txt`).
-4. **Run and check locally:**
-   - `streamlit run streamlit_app.py`
-   - `python scripts/check_handin.py` (naming, entrypoint, requirements, no raw data
-     or secrets committed).
-5. **Make it a GitHub repo.** Inside `<zID>_projectB`: `git init`, commit your code
-   AND your `results/` artifacts (the deployed app reads them), and push to a **new**
-   repo. Keep it **private** while you build. The folder is the repo root, so the
-   Streamlit entrypoint is just `streamlit_app.py`.
-6. **You deploy in the browser.** On share.streamlit.io, sign in, New app -> pick
-   your repo, branch `main` (or `master`, whichever holds the app), main file
-   `streamlit_app.py`, Python 3.13. Your AI agent cannot do this step - it needs your
-   login. The app can run from a private repo while you develop.
-7. **At hand-in: make the repo PUBLIC**, confirm the live URL loads in a fresh
-   incognito browser (logged out), and submit the public URL + the repo URL, plus the
-   zipped folder to Moodle.
+1. **Run the local gates from the project root.**
 
-## Nested-repo caveat
-If you keep your project inside `fins-agent/fins2026/`, do **not** push it as part of
-the fins-agent repository. `git init` inside your `<zID>_projectB` folder and push
-that folder's contents to a **separate, fresh** GitHub repo. (Tip: add
-`fins2026/z*_project*` to the fins-agent `.gitignore` so it stays out of that repo.)
+   ```bash
+   pytest -q
+   python scripts/check_handin.py
+   git diff --check
+   git status --short
+   streamlit run streamlit_app.py --server.headless true
+   ```
+
+   In another terminal, check the health endpoint:
+
+   ```bash
+   curl --fail --silent --show-error http://127.0.0.1:8501/_stcore/health
+   ```
+
+2. **Create the public GitHub repository and add `origin`.** These commands derive
+   the authenticated account name, so no fabricated URL is needed:
+
+   ```bash
+   gh auth status
+   GH_OWNER="$(gh api user --jq .login)"
+   gh repo create "$GH_OWNER/z5711503_projectB" --public --description "FINS5545 Project B - Cross-Asset Allocation Lens"
+   git remote add origin "https://github.com/$GH_OWNER/z5711503_projectB.git"
+   git remote -v
+   ```
+
+3. **Push the existing `main` branch.**
+
+   ```bash
+   git branch --show-current
+   git push -u origin main
+   ```
+
+4. **Confirm the repository is public.**
+
+   ```bash
+   GH_OWNER="$(gh api user --jq .login)"
+   gh repo view "$GH_OWNER/z5711503_projectB" --json nameWithOwner,url,visibility
+   test "$(gh repo view "$GH_OWNER/z5711503_projectB" --json visibility --jq .visibility)" = "PUBLIC"
+   ```
+
+5. **Deploy through Streamlit Community Cloud.** The current official Community
+   Cloud workflow is browser-based. Sign in at `https://share.streamlit.io`, choose
+   **Create app**, select the authenticated `z5711503_projectB` repository, choose branch
+   `main`, set the main file path to `streamlit_app.py`, select Python 3.13, and
+   deploy. Record the real URL only after Streamlit reports success.
+
+6. **Verify the published result.** Open the GitHub repository and the Streamlit
+   URL in a fresh logged-out browser, confirm the repository visibility is public,
+   all five app tabs load, and no secrets or private paths are exposed. Then submit
+   the real public repository URL, live Streamlit URL, and clean ZIP to Moodle.
+
+## Repository boundary
+
+Run every command from the `z5711503_projectB` root. Confirm that
+`git rev-parse --show-toplevel` resolves to that folder before adding the remote;
+do not publish the surrounding course repository.
 
 ## Common pitfalls
 - **Missing app artifact.** The app errors on Cloud because a precomputed file under
@@ -58,12 +82,12 @@ that folder's contents to a **separate, fresh** GitHub repo. (Tip: add
   committed while blocking raw data - do not re-ignore it.
 - **Missing requirement.** Test in a fresh virtual environment; the app's deps are in
   `requirements.txt` (no `nltk`).
-- **Absolute paths or committed raw data.** These break on Cloud. Load raw data
-  through `src/data_access.py`.
+- **Absolute paths or committed raw data.** These break the clean-checkout boundary.
+  The app should continue to read only the committed precomputed artifacts.
 - **Private at hand-in.** Markers cannot open a private app. Make it public and
   re-test the URL before the deadline.
-- **Heavy compute on every click.** Cache, or precompute and load from `results/`.
-- **Cold start.** The first data load downloads the hosted ZIP; cache it.
+- **Heavy compute on every click.** Do not add modelling to the app runtime;
+  continue to load the committed outputs under `results/`.
 
 ## Troubleshooting (failures we actually hit)
 - **`gh` lost auth mid-session** (push fails): re-run `gh auth login -h github.com -w`
@@ -74,5 +98,5 @@ that folder's contents to a **separate, fresh** GitHub repo. (Tip: add
 - **`results/data` not committed -> the app errors on Cloud:** the starter
   `.gitignore` keeps `results/` committed; commit your precomputed artifacts and push
   before deploying.
-- **VADER `LookupError` on a clean machine:** run `nltk.download('vader_lexicon')`
-  once in your build (a `run_part_b.py` step, not the app).
+- **Unexpected analytical or network import:** stop and remove it from the app
+  runtime; deployment should not need raw-data access or VADER resources.

@@ -77,9 +77,9 @@ The Allocation Lab accepts two to six non-negative fund weights summing to 100% 
 
 ## Reports and evidence
 
-Open [`report/FINAL_REPORT.md`](report/FINAL_REPORT.md) for the full methodology, results, figures, negative fusion finding, limitations, recommendations, and artifact guide. The complete report figure-to-source map is in `results/tables/report_exhibit_catalog.csv`.
+Open [`report/FINAL_REPORT.md`](report/FINAL_REPORT.md) for the Markdown source, [`report/report.docx`](report/report.docx) for the editable course-formatted report, and [`report/report.pdf`](report/report.pdf) for the technically checked PDF export. The complete report figure-to-source map is in `results/tables/report_exhibit_catalog.csv`.
 
-The Markdown report remains a source document for final personal review and course formatting. Before submission, CHUHAO PENG must independently check every AI-assisted figure, number, and passage; personally write or rewrite and approve the final economic interpretation and narrative; and convert the approved report to the required PDF format.
+The Word and PDF files have been generated and technically reviewed, but they are not yet claimed as CHUHAO PENG's personally approved final student report. Before submission, CHUHAO PENG must independently check every AI-assisted figure, number, and passage and personally write or rewrite and approve the final economic interpretation and narrative.
 
 ## Validation
 
@@ -102,4 +102,4 @@ Then check `http://localhost:8501/_stcore/health`. A local pass does not prove t
 
 ## Hand-in boundary
 
-The repository excludes raw data, virtual environments, caches, secrets, and local ZIP files. `scripts/make_submission_zip.sh` creates a clean ZIP outside the project directory and validates its archive structure. Publishing the repository, deploying Streamlit, converting the report to the course-required final PDF, and uploading to Moodle remain separate user-controlled steps.
+The repository excludes raw data, virtual environments, caches, secrets, and local ZIP files. `scripts/make_submission_zip.sh` creates a clean ZIP outside the project directory and validates its archive structure. Personal report approval, publishing the repository, deploying Streamlit, and uploading to Moodle remain separate user-controlled steps.
