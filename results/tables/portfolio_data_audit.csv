@@ -1,0 +1,66 @@
+stage,universe,date,fund_id,ticker,check_name,observed_value,status,message
+etl,crypto_prices,,,,clean_duplicate_ticker_date_rows,0,pass,Clean ticker-date keys are unique.
+etl,crypto_prices,,,,clean_rows,14610,pass,Rows after deterministic cleaning and sample cap.
+etl,crypto_prices,,,,first_date,2020-01-01 00:00:00,pass,First cleaned observation date.
+etl,crypto_prices,,,,last_date,2023-12-31 00:00:00,pass,Last cleaned observation date; not later than 2023-12-31.
+etl,crypto_prices,,,,nonfinite_numeric_cells,0,pass,Non-finite non-key numeric cells are audited; adjusted close is always finite.
+etl,crypto_prices,,,,raw_exact_duplicate_rows,0,pass,Exact row duplicates observed before cleaning.
+etl,crypto_prices,,,,raw_rows,14620,pass,Rows supplied by the official loader.
+etl,crypto_prices,,,,removed_duplicate_key_rows,0,pass,Only identical ticker-date duplicates may be collapsed.
+etl,crypto_prices,,,,removed_missing_required_rows,0,pass,"Ticker, date, and adjusted close are required."
+etl,crypto_prices,,,,removed_outside_sample_rows,10,pass,Rows outside 2020-01-01 through 2023-12-31 are excluded.
+etl,crypto_prices,,,,unique_tickers,10,pass,Distinct cleaned ticker count.
+etl,equity_prices,,,,clean_duplicate_ticker_date_rows,0,pass,Clean ticker-date keys are unique.
+etl,equity_prices,,,,clean_rows,50300,pass,Rows after deterministic cleaning and sample cap.
+etl,equity_prices,,,,first_date,2020-01-02 00:00:00,pass,First cleaned observation date.
+etl,equity_prices,,,,last_date,2023-12-29 00:00:00,pass,Last cleaned observation date; not later than 2023-12-31.
+etl,equity_prices,,,,nonfinite_numeric_cells,0,pass,Non-finite non-key numeric cells are audited; adjusted close is always finite.
+etl,equity_prices,,,,raw_exact_duplicate_rows,0,pass,Exact row duplicates observed before cleaning.
+etl,equity_prices,,,,raw_rows,50300,pass,Rows supplied by the official loader.
+etl,equity_prices,,,,removed_duplicate_key_rows,0,pass,Only identical ticker-date duplicates may be collapsed.
+etl,equity_prices,,,,removed_missing_required_rows,0,pass,"Ticker, date, and adjusted close are required."
+etl,equity_prices,,,,removed_outside_sample_rows,0,pass,Rows outside 2020-01-01 through 2023-12-31 are excluded.
+etl,equity_prices,,,,unique_tickers,50,pass,Distinct cleaned ticker count.
+etl,news_headlines,,,,clean_rows,146836,pass,Rows after exact-key cleaning and sample cap.
+etl,news_headlines,,,,first_date,2020-01-01 00:00:00+00:00,pass,First retained UTC headline timestamp.
+etl,news_headlines,,,,last_date,2023-12-31 00:00:00+00:00,pass,Last retained UTC headline timestamp.
+etl,news_headlines,,,,missing_publisher_rows,137447,warning,Publisher missingness is retained and is not an economic signal.
+etl,news_headlines,,,,raw_rows,149683,pass,Rows supplied by the official loader.
+etl,news_headlines,,,,removed_exact_headline_key_rows,2847,pass,Exact ticker-normalised-date-title duplicates removed.
+etl,news_headlines,,,,removed_missing_required_rows,0,pass,"Ticker, timestamp, and title are required."
+etl,news_headlines,,,,removed_outside_sample_rows,0,pass,Rows outside the common sample are excluded.
+etl,news_headlines,,,,unique_tickers,50,pass,Distinct cleaned ticker count.
+features,combined,,,,duplicate_panel_dates,0,pass,Return-panel dates are unique.
+features,combined,,,,panel_first_date,2020-01-02 00:00:00,pass,First native or comparison-calendar date.
+features,combined,,,,panel_last_date,2023-12-29 00:00:00,pass,Last native or comparison-calendar date.
+features,combined,,,,panel_missing_cells,50,warning,Missing returns are retained and never filled.
+features,combined,,,,panel_nonfinite_nonmissing_cells,0,pass,Every non-missing return must be finite.
+features,combined,,,,panel_rows,1006,pass,Observed dates in the wide return panel.
+features,combined,,,,panel_tickers,60,pass,Ticker columns in the wide return panel.
+features,crypto,,,,duplicate_panel_dates,0,pass,Return-panel dates are unique.
+features,crypto,,,,panel_first_date,2020-01-01 00:00:00,pass,First native or comparison-calendar date.
+features,crypto,,,,panel_last_date,2023-12-31 00:00:00,pass,Last native or comparison-calendar date.
+features,crypto,,,,panel_missing_cells,10,warning,Missing returns are retained and never filled.
+features,crypto,,,,panel_nonfinite_nonmissing_cells,0,pass,Every non-missing return must be finite.
+features,crypto,,,,panel_rows,1461,pass,Observed dates in the wide return panel.
+features,crypto,,,,panel_tickers,10,pass,Ticker columns in the wide return panel.
+features,equity,,,,duplicate_panel_dates,0,pass,Return-panel dates are unique.
+features,equity,,,,panel_first_date,2020-01-02 00:00:00,pass,First native or comparison-calendar date.
+features,equity,,,,panel_last_date,2023-12-29 00:00:00,pass,Last native or comparison-calendar date.
+features,equity,,,,panel_missing_cells,50,warning,Missing returns are retained and never filled.
+features,equity,,,,panel_nonfinite_nonmissing_cells,0,pass,Every non-missing return must be finite.
+features,equity,,,,panel_rows,1006,pass,Observed dates in the wide return panel.
+features,equity,,,,panel_tickers,50,pass,Ticker columns in the wide return panel.
+portfolio,combined,,combined_equal_weight,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,combined,,combined_max_sharpe,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,combined,,combined_min_variance,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,combined,,combined_risk_parity,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,crypto,,crypto_equal_weight,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,crypto,,crypto_max_sharpe,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,crypto,,crypto_min_variance,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,crypto,,crypto_risk_parity,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,equity,,equity_equal_weight,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,equity,,equity_max_sharpe,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,equity,,equity_min_variance,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+portfolio,equity,,equity_risk_parity,,missing_realised_return_events,0,pass,Count of live dates with at least one unavailable held-asset return.
+source,all,,,,official_data_source,https://drive.google.com/uc?export=download&id=1h0Wy12_qgR_NZJqtSxI9LwPEVKgp5DzH,pass,https://drive.google.com/uc?export=download&id=1h0Wy12_qgR_NZJqtSxI9LwPEVKgp5DzH [success]

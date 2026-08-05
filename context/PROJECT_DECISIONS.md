@@ -19,16 +19,36 @@ Status: design baseline for Interaction 001. This file predeclares methodology b
 
 - Evaluation: expanding walk-forward out-of-sample backtest.
 - Initial estimation window: 252 observations for Equity and Combined; 365 observations for Crypto.
-- Rebalancing: monthly. The exact within-month decision-day convention is unresolved below and must be fixed before implementation.
+- Rebalancing calendar: the decision date is the last observed return-panel date in each calendar month. The training sample includes information through that decision date. Target weights first become effective on the first observed return-panel date in the next calendar month. A final decision date with no following observation is not formed or reported.
 - Information boundary: the estimation window ends on the decision date; target weights first apply on the next holding-period observation. No holding return may influence its own weights.
-- Constraints: fully invested, long-only, and per-asset maximum weight `min(35%, 5 / number_of_assets)` using the eligible asset count at that decision.
+- Eligibility: use only information available through the decision date and enforce the common sample end of 2023-12-31. An asset must have a valid return on the decision date and at least the applicable initial-window count of valid historical returns through that date. Covariance and expected-return estimation use only complete historical rows across the assets eligible at that decision. If fewer than the applicable initial-window count of complete rows remains, skip and record the decision. Never fill missing returns. If a held asset has a missing realised return, report a missing fund return and an audit warning rather than impute it.
+- Constraints: fully invested, long-only, and per-asset maximum weight `min(35%, 5 / number_of_assets)` using the eligible asset count at that decision. Validate finite weights, the fully invested sum to `1e-8`, the lower bound to `1e-10`, and the maximum-weight bound to `1e-8`.
+- Covariance estimator: sample covariance with fixed 10% diagonal shrinkage, `0.9 * sample_covariance + 0.1 * diag(sample_covariance)`. This fixed value is not tuned.
+- Maximum-Sharpe expected returns: expanding arithmetic means through the decision date, shrunk 50% toward their cross-sectional mean. This fixed value is not tuned.
+- Optimisation: SciPy SLSQP with `maxiter=1000` and `ftol=1e-10`. Minimum Variance minimises portfolio variance. Maximum Sharpe maximises expected return divided by volatility. Risk Parity minimises squared deviations of asset risk contributions from their equal-risk-contribution target. Equal Weight is the capped equal-weight benchmark.
+- Capped-simplex projection: use a deterministic Euclidean projection found by bisection of a common threshold, `clip(v - threshold, 0, cap)`, and validate feasibility, determinism, full investment, and bounds.
 - Risk-free rate: zero for optimisation and Sharpe calculations.
 - Return construction: simple adjusted-close returns within ticker, with no price forward filling.
 - Combined calendar: calculate crypto returns first on the native seven-day calendar, then select those return observations onto equity trading dates. Do not merge price levels and then difference.
 - Annualisation: Equity and Combined use 252; Crypto uses 365. Annualised mean return is daily arithmetic mean times the applicable factor, annualised volatility is daily sample standard deviation times the square root of that factor, and Sharpe is annualised mean excess return divided by annualised volatility. Growth of $1 and drawdown use compounded simple returns.
-- Gross/net accounting: report gross return, turnover, cost, and net return separately. One-way turnover at a rebalance is `0.5 * sum(abs(target_weight - pretrade_drifted_weight))`; the initial investment has turnover 1.0. Trading cost is `0.001 * turnover` (10 bps one-way) and is deducted once on the effective rebalance date.
+- Gross/net accounting: report gross return, turnover, cost, and net return separately. The initial investment has turnover 1.0. Later one-way turnover is `0.5 * sum(abs(target_weight - pretrade_drifted_weight))` over the union of old and new assets. Trading cost is `0.001 * turnover` (10 bps one-way). On an effective rebalance date, net return is `(1 - cost) * (1 + gross_return) - 1`; on other dates net return equals gross return.
 - Solver fallback: record method, date, solver, success flag/message, and fallback use. On failure or infeasible/non-finite output, reuse the previous feasible target for that universe-method if it remains feasible for the current eligible universe; otherwise use capped equal weight. Never substitute silently.
 - Investor simulator: use the intersection of available OOS fund-return dates, display the common period explicitly, and apply user allocations only to precomputed fund returns.
+
+## Stable fund identifiers
+
+- `equity_equal_weight`
+- `equity_min_variance`
+- `equity_risk_parity`
+- `equity_max_sharpe`
+- `crypto_equal_weight`
+- `crypto_min_variance`
+- `crypto_risk_parity`
+- `crypto_max_sharpe`
+- `combined_equal_weight`
+- `combined_min_variance`
+- `combined_risk_parity`
+- `combined_max_sharpe`
 
 ## Sentiment design
 
@@ -63,12 +83,7 @@ These are design claims only until implemented and evaluated.
 
 The following must be resolved in a later documented decision before code or empirical output relies on them:
 
-1. Whether the monthly decision date is the last available observation of each calendar month or another fixed monthly convention.
-2. Asset eligibility rules for missing returns, listing history, and changing universes; the minimum-variance/covariance panel policy must not use future completeness.
-3. Expected-return estimator for Maximum Sharpe, covariance estimator/regularisation for all optimisers, numerical tolerances, and exact solver choices.
-4. The exact capped-simplex projection implementation and validation tolerances for weights, risk contributions, and constraint feasibility.
-5. The frozen finance lexicon source, its package/version or checked-in artifact, term collision precedence, and an evaluation plan that distinguishes changed coverage from improved accuracy.
-6. Output schemas beyond the four mandatory filenames, fund identifiers/display labels, and how solver/fallback audit rows are serialised.
-7. Figure design, report exhibit mapping, and app controls beyond the fixed product journey. These presentation choices must not alter the methodology.
+1. The frozen finance lexicon source, its package/version or checked-in artifact, term collision precedence, and an evaluation plan that distinguishes changed coverage from improved accuracy.
+2. Figure design, report exhibit mapping, and app controls beyond the fixed product journey. These presentation choices must not alter the methodology.
 
 No unresolved item may be filled in by convenience after viewing full-sample results. Record the decision, rationale, and tests first.
