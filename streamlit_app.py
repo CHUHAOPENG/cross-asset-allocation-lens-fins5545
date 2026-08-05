@@ -43,19 +43,55 @@ st.markdown(
     :root { --navy:#17324D; --blue:#2F6B9A; --orange:#D97745; --paper:#F5F7FA; }
     .stApp { background: linear-gradient(180deg, #F7F9FC 0%, #FFFFFF 28%); }
     .block-container { max-width: 1480px; padding-top: 1.6rem; padding-bottom: 3rem; }
-    .hero { padding: 1.35rem 1.55rem; border-radius: 18px; color: white;
+    .hero { padding: 1.35rem 1.55rem; border-radius: 18px;
             background: linear-gradient(120deg, #17324D, #2F6B9A 70%, #5AA6A6); }
+    .hero, .hero h1, .hero p, .hero .eyebrow { color: #FFFFFF; }
     .hero h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.25rem); letter-spacing: -0.03em; }
-    .hero p { margin: .55rem 0 0; max-width: 920px; color: #E9F0F5; font-size: 1.04rem; }
+    .hero p { margin: .55rem 0 0; max-width: 920px; font-size: 1.04rem; }
     .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-weight: 700;
-               font-size: .75rem; color: #BFE0E0; }
+               font-size: .75rem; }
+    div[data-testid="stHeadingWithActionElements"],
+    div[data-testid="stMarkdownContainer"] > p,
+    div[data-testid="stMarkdownContainer"] > ul,
+    div[data-testid="stMarkdownContainer"] > ol,
+    div[data-testid="stExpander"] summary,
+    div[data-testid="stExpander"] summary p,
+    div[data-testid="stExpanderDetails"] div[data-testid="stMarkdownContainer"] > p,
+    div[data-testid="stExpanderDetails"] div[data-testid="stMarkdownContainer"] > ul {
+        color: #1F2933;
+    }
+    div[data-testid="stCaptionContainer"],
+    div[data-testid="stCaptionContainer"] p { color: #4A5B6B; }
+    div[data-testid="stWidgetLabel"],
+    div[data-testid="stWidgetLabel"] p,
+    div[data-testid="stRadio"] label,
+    div[data-testid="stRadio"] label p,
+    div[data-testid="stToggle"] label,
+    div[data-testid="stToggle"] label p,
+    div[data-testid="stMultiSelect"] label,
+    div[data-testid="stMultiSelect"] label p,
+    div[data-testid="stSelectbox"] label,
+    div[data-testid="stSelectbox"] label p,
+    div[data-testid="stNumberInput"] label,
+    div[data-testid="stNumberInput"] label p { color: #1F2933; }
     div[data-testid="stMetric"] { background: #FFFFFF; border: 1px solid #DDE5EC;
                                   border-radius: 14px; padding: .8rem 1rem; }
-    div[data-testid="stTabs"] button { font-weight: 650; }
+    div[data-testid="stMetricLabel"], div[data-testid="stMetricLabel"] p,
+    div[data-testid="stMetricValue"] { color: #1F2933; }
+    div[data-testid="stTabs"] button[role="tab"] { color: #526374; font-weight: 650; }
+    div[data-testid="stTabs"] button[role="tab"] p { color: inherit; }
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+        color: #17324D; border-bottom-color: #C94352;
+    }
+    div[data-testid="stAlert"],
+    div[data-testid="stAlert"] div[data-testid="stMarkdownContainer"] > p {
+        color: #1F2933;
+    }
     .disclosure { border-left: 4px solid #D97745; padding: .7rem 1rem;
-                  background: #FFF8F3; border-radius: 0 10px 10px 0; }
+                  background: #FFF3E8; border-radius: 0 10px 10px 0;
+                  color: #1F2933; }
     .target-label { color:#17324D; font-weight:700; }
-    .small-note { color:#66788A; font-size:.88rem; }
+    .small-note { color:#526374; font-size:.88rem; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -73,6 +109,44 @@ def _format_percent(value: float) -> str:
 
 def _format_number(value: float, digits: int = 2) -> str:
     return "—" if pd.isna(value) else f"{value:.{digits}f}"
+
+
+def _format_display_dates(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+    """Return a display-only copy with dates rendered as ISO calendar dates."""
+    output = frame.copy()
+    for column in columns:
+        if column in output.columns:
+            parsed = pd.to_datetime(output[column], errors="coerce")
+            output[column] = parsed.dt.strftime("%Y-%m-%d").where(parsed.notna(), "—")
+    return output
+
+
+def _render_plotly(figure: go.Figure, *, key: str) -> None:
+    """Apply the approved light Plotly presentation and render without theming."""
+    figure.update_layout(
+        template="plotly_white",
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        font={"color": PALETTE["ink"]},
+        legend={
+            "bgcolor": "rgba(255,255,255,0.92)",
+            "bordercolor": "#DDE5EC",
+            "borderwidth": 1,
+            "font": {"color": PALETTE["ink"]},
+        },
+        hoverlabel={
+            "bgcolor": "#FFFFFF",
+            "bordercolor": "#CBD5E1",
+            "font": {"color": PALETTE["ink"]},
+        },
+    )
+    figure.update_xaxes(
+        gridcolor="#E5E7EB", linecolor="#CBD5E1", zerolinecolor="#CBD5E1"
+    )
+    figure.update_yaxes(
+        gridcolor="#E5E7EB", linecolor="#CBD5E1", zerolinecolor="#CBD5E1"
+    )
+    st.plotly_chart(figure, width="stretch", key=key, theme=None)
 
 
 def _line_chart(
@@ -103,6 +177,7 @@ def _line_chart(
         xaxis_title="Date",
         yaxis_title=y_title,
     )
+    figure.update_xaxes(tickformat="%Y-%m-%d", hoverformat="%Y-%m-%d")
     if percent_axis:
         figure.update_yaxes(tickformat=".1%")
     return figure
@@ -222,11 +297,31 @@ with tab_explorer:
             "rebalance_count": "Rebalances",
             "fallback_count": "Fallbacks",
         })
+        display["Universe"] = display["Universe"].str.title()
+        display["Method"] = display["Method"].map({
+            "equal_weight": "Equal Weight",
+            "minimum_variance": "Minimum Variance",
+            "risk_parity": "Risk Parity",
+            "max_sharpe": "Maximum Sharpe",
+            "risk_parity_sentiment": "Risk Parity + Sentiment",
+        })
+        display = _format_display_dates(display, ["OOS start", "OOS end"])
+        comparison_order = [
+            "Fund", "Cumulative return", "Annualised return",
+            "Annualised volatility", "Sharpe", "Maximum drawdown",
+            "Universe", "Method", "OOS start", "OOS end", "Annualisation",
+            "Total turnover", "Total trading cost", "Rebalances", "Fallbacks",
+        ]
         st.dataframe(
-            display.drop(columns=["fund_id"]),
+            display[comparison_order],
             width="stretch",
             hide_index=True,
             column_config={
+                "Fund": st.column_config.TextColumn(width="medium"),
+                "Universe": st.column_config.TextColumn(width="small"),
+                "Method": st.column_config.TextColumn(width="medium"),
+                "OOS start": st.column_config.TextColumn(width="small"),
+                "OOS end": st.column_config.TextColumn(width="small"),
                 "Cumulative return": st.column_config.NumberColumn(format="percent"),
                 "Annualised return": st.column_config.NumberColumn(format="percent"),
                 "Annualised volatility": st.column_config.NumberColumn(format="percent"),
@@ -235,20 +330,44 @@ with tab_explorer:
                 "Total trading cost": st.column_config.NumberColumn(format="percent"),
             },
         )
+        scatter_data = comparison.copy()
+        scatter_data["Universe group"] = scatter_data["universe"].map({
+            "equity": "Equity", "crypto": "Crypto", "combined": "Combined",
+        })
+        scatter_data["Method"] = scatter_data["method"].map({
+            "equal_weight": "Equal Weight",
+            "minimum_variance": "Minimum Variance",
+            "risk_parity": "Risk Parity",
+            "max_sharpe": "Maximum Sharpe",
+            "risk_parity_sentiment": "Risk Parity + Sentiment",
+        })
         scatter = px.scatter(
-            comparison,
+            scatter_data,
             x=f"annualised_volatility_{basis}",
             y=f"annualised_return_{basis}",
-            color="universe",
+            color="Universe group",
             hover_name="display_name",
-            symbol="method",
+            hover_data={
+                "Universe group": False,
+                "Method": True,
+                f"annualised_volatility_{basis}": ":.1%",
+                f"annualised_return_{basis}": ":.1%",
+            },
             title=f"{basis_label} annualised return versus volatility",
-            color_discrete_map={"equity": PALETTE["blue"], "crypto": PALETTE["orange"], "combined": PALETTE["cyan"]},
+            labels={
+                f"annualised_volatility_{basis}": "Annualised volatility",
+                f"annualised_return_{basis}": "Annualised return",
+            },
+            color_discrete_map={
+                "Equity": PALETTE["blue"],
+                "Crypto": PALETTE["orange"],
+                "Combined": PALETTE["cyan"],
+            },
         )
-        scatter.update_layout(template="plotly_white", height=480, legend_title_text="")
+        scatter.update_layout(height=480, legend_title_text="Fund group")
         scatter.update_xaxes(title="Annualised volatility", tickformat=".1%")
         scatter.update_yaxes(title="Annualised arithmetic return", tickformat=".1%")
-        st.plotly_chart(scatter, width="stretch", key="explorer_scatter")
+        _render_plotly(scatter, key="explorer_scatter")
 
     default_compare = ["equity_risk_parity", "equity_risk_parity_sentiment"]
     selected_compare = st.multiselect(
@@ -262,13 +381,22 @@ with tab_explorer:
         selected_catalog = catalog.loc[catalog["fund_id"].isin(selected_compare), [
             "display_name", "first_live_date", "last_date", "periods_per_year",
         ]]
-        st.dataframe(
+        selected_catalog = _format_display_dates(
             selected_catalog.rename(columns={
                 "display_name": "Fund", "first_live_date": "OOS start",
                 "last_date": "OOS end", "periods_per_year": "Annualisation",
             }),
+            ["OOS start", "OOS end"],
+        )
+        st.dataframe(
+            selected_catalog,
             hide_index=True,
             width="stretch",
+            column_config={
+                "Fund": st.column_config.TextColumn(width="large"),
+                "OOS start": st.column_config.TextColumn(width="small"),
+                "OOS end": st.column_config.TextColumn(width="small"),
+            },
         )
         series = artifacts.fund_returns.loc[
             artifacts.fund_returns["fund_id"].isin(selected_compare)
@@ -278,15 +406,13 @@ with tab_explorer:
         drawdown_col = f"drawdown_{basis}"
         left, right = st.columns(2)
         with left:
-            st.plotly_chart(
+            _render_plotly(
                 _line_chart(series, x="date", y=growth_col, color="Fund", title=f"Growth of $1 — {basis_label}", y_title="Growth of $1"),
-                width="stretch",
                 key="explorer_growth",
             )
         with right:
-            st.plotly_chart(
+            _render_plotly(
                 _line_chart(series, x="date", y=drawdown_col, color="Fund", title=f"Drawdown — {basis_label}", y_title="Drawdown", percent_axis=True),
-                width="stretch",
                 key="explorer_drawdown",
             )
 
@@ -305,8 +431,8 @@ with tab_fact:
     ].iloc[0]
     st.subheader(fund["display_name"])
     st.caption(
-        f"{fund['short_description']} OOS {fund['first_live_date'].date()} to "
-        f"{fund['last_date'].date()} · {int(fund['periods_per_year'])}-period annualisation."
+        f"{fund['short_description']} OOS {fund['first_live_date'].date().isoformat()} to "
+        f"{fund['last_date'].date().isoformat()} · {int(fund['periods_per_year'])}-period annualisation."
     )
     cards = st.columns(6)
     cards[0].metric("Growth of $1 (net)", _format_number(1.0 + metric["cumulative_return_net"]))
@@ -329,7 +455,8 @@ with tab_fact:
     fact_chart.add_trace(go.Scatter(x=fund_series["date"], y=fund_series["growth_net"], name="Net", line={"color": PALETTE["navy"], "width": 2.5}))
     fact_chart.add_trace(go.Scatter(x=fund_series["date"], y=fund_series["growth_gross"], name="Gross", line={"color": PALETTE["orange"], "width": 1.8, "dash": "dash"}))
     fact_chart.update_layout(template="plotly_white", height=440, title="Growth of $1 — gross and net", xaxis_title="Date", yaxis_title="Growth of $1", hovermode="x unified", legend_title_text="")
-    st.plotly_chart(fact_chart, width="stretch", key="fact_sheet_growth")
+    fact_chart.update_xaxes(tickformat="%Y-%m-%d", hoverformat="%Y-%m-%d")
+    _render_plotly(fact_chart, key="fact_sheet_growth")
 
     st.markdown('<div class="target-label">Latest target weights from the most recent rebalance</div>', unsafe_allow_html=True)
     holdings = app_utils.latest_target_holdings(
@@ -352,7 +479,7 @@ with tab_fact:
         holding_chart.update_layout(template="plotly_white", height=470, legend_title_text="")
         holding_chart.update_xaxes(tickformat=".1%", title="Target weight")
         holding_chart.update_yaxes(title="")
-        st.plotly_chart(holding_chart, width="stretch", key="fact_sheet_holdings_chart")
+        _render_plotly(holding_chart, key="fact_sheet_holdings_chart")
     with hold_right:
         st.dataframe(
             holdings[["holding_rank", "ticker", "asset_class", "target_weight"]].rename(columns={
@@ -393,8 +520,12 @@ with tab_fact:
         )
         history_chart.update_layout(template="plotly_white", height=440, legend_title_text="Ticker")
         history_chart.update_yaxes(tickformat=".1%", title="Target weight")
-        history_chart.update_xaxes(title="Target effective date")
-        st.plotly_chart(history_chart, width="stretch", key="fact_sheet_weight_history")
+        history_chart.update_xaxes(
+            title="Target effective date",
+            tickformat="%Y-%m-%d",
+            hoverformat="%Y-%m-%d",
+        )
+        _render_plotly(history_chart, key="fact_sheet_weight_history")
     st.info(_method_note(fund["method"], fund["universe"]))
 
 
@@ -461,8 +592,8 @@ with tab_allocation:
                 simulation.daily["portfolio_return"], periods_per_year=annualisation
             )
             st.success(
-                f"Exact common finite OOS period: {simulation.common_first_date.date()} "
-                f"to {simulation.common_last_date.date()} · {simulation.observations:,} observations · "
+                f"Exact common finite OOS period: {simulation.common_first_date.date().isoformat()} "
+                f"to {simulation.common_last_date.date().isoformat()} · {simulation.observations:,} observations · "
                 f"{annualisation}-period annualisation."
             )
             if simulation.excluded_nonfinite_dates:
@@ -488,7 +619,8 @@ with tab_allocation:
                 )
                 growth_fig.update_traces(line={"color": PALETTE["navy"], "width": 2.5})
                 growth_fig.update_layout(template="plotly_white", height=420, xaxis_title="Date", yaxis_title="Portfolio value")
-                st.plotly_chart(growth_fig, width="stretch", key="allocation_growth")
+                growth_fig.update_xaxes(tickformat="%Y-%m-%d", hoverformat="%Y-%m-%d")
+                _render_plotly(growth_fig, key="allocation_growth")
             with allocation_right:
                 drawdown_fig = px.area(
                     simulation.daily, x="date", y="drawdown",
@@ -496,8 +628,9 @@ with tab_allocation:
                 )
                 drawdown_fig.update_traces(line={"color": PALETTE["red"]}, fillcolor="rgba(185,74,72,.20)")
                 drawdown_fig.update_layout(template="plotly_white", height=420, xaxis_title="Date", yaxis_title="Drawdown")
+                drawdown_fig.update_xaxes(tickformat="%Y-%m-%d", hoverformat="%Y-%m-%d")
                 drawdown_fig.update_yaxes(tickformat=".1%")
-                st.plotly_chart(drawdown_fig, width="stretch", key="allocation_drawdown")
+                _render_plotly(drawdown_fig, key="allocation_drawdown")
             if method == "monthly_reset":
                 st.caption(
                     f"Recorded {len(simulation.rebalance_dates)} allocation dates, including "
@@ -547,7 +680,8 @@ with tab_sentiment:
     ))
     index_chart.add_hline(y=50, line_dash="dot", line_color=PALETTE["muted"], annotation_text="Neutral score")
     index_chart.update_layout(template="plotly_white", height=430, title=f"{selected_sector} sentiment index (gaps preserved)", xaxis_title="Date", yaxis_title="Index (0–100)", hovermode="x unified")
-    st.plotly_chart(index_chart, width="stretch", key="sentiment_index_chart")
+    index_chart.update_xaxes(tickformat="%Y-%m-%d", hoverformat="%Y-%m-%d")
+    _render_plotly(index_chart, key="sentiment_index_chart")
     coverage_chart = go.Figure(go.Scatter(
         x=sentiment_series["date"],
         y=sentiment_series["coverage"],
@@ -559,8 +693,9 @@ with tab_sentiment:
         fillcolor="rgba(217,119,69,.16)",
     ))
     coverage_chart.update_layout(template="plotly_white", height=330, title="Eligible-ticker news coverage", xaxis_title="Date", yaxis_title="Coverage", showlegend=False)
+    coverage_chart.update_xaxes(tickformat="%Y-%m-%d", hoverformat="%Y-%m-%d")
     coverage_chart.update_yaxes(tickformat=".0%", range=[0, 1])
-    st.plotly_chart(coverage_chart, width="stretch", key="sentiment_coverage_chart")
+    _render_plotly(coverage_chart, key="sentiment_coverage_chart")
     if show_causal:
         causal_chart = go.Figure(go.Scatter(
             x=sentiment_series["date"],
@@ -572,23 +707,28 @@ with tab_sentiment:
         ))
         causal_chart.add_hline(y=0, line_dash="dot", line_color=PALETTE["muted"])
         causal_chart.update_layout(template="plotly_white", height=330, title="Causal expanding z-score — separate from the descriptive index", xaxis_title="Date", yaxis_title="Causal z-score")
-        st.plotly_chart(causal_chart, width="stretch", key="sentiment_causal_chart")
+        causal_chart.update_xaxes(tickformat="%Y-%m-%d", hoverformat="%Y-%m-%d")
+        _render_plotly(causal_chart, key="sentiment_causal_chart")
     snapshot = app_utils.latest_sector_sentiment_snapshot(
         artifacts.sector_sentiment_index, model=selected_model
     )
     snapshot_date = snapshot["date"].iloc[0].date().isoformat()
     st.subheader(f"Latest sector snapshot · {snapshot_date}")
     st.caption("Missing index values remain missing; the app does not replace missing news with 50.")
-    st.dataframe(
-        snapshot.rename(columns={
+    snapshot_display = _format_display_dates(snapshot.rename(columns={
             "date": "Date", "sector": "Sector", "headline_count": "Headlines",
             "observed_ticker_count": "Observed tickers",
             "eligible_ticker_count": "Eligible tickers", "coverage": "Coverage",
             "index_0_100": "Index (0–100)", "causal_z": "Causal z-score",
-        }),
+        }), ["Date"])
+    st.dataframe(
+        snapshot_display,
         hide_index=True,
         width="stretch",
-        column_config={"Coverage": st.column_config.NumberColumn(format="percent")},
+        column_config={
+            "Date": st.column_config.TextColumn(width="small"),
+            "Coverage": st.column_config.NumberColumn(format="percent"),
+        },
     )
     st.info(
         "Rule A maps a headline's UTC calendar date to the same observed equity date or the next one. "
@@ -604,8 +744,8 @@ with tab_fusion:
     )
     st.warning(fusion_summary["summary_text"])
     st.caption(
-        f"Identical OOS comparison: {fusion_summary['common_first_date'].date()} to "
-        f"{fusion_summary['common_last_date'].date()} · {fusion_summary['observations']:,} observations. "
+        f"Identical OOS comparison: {fusion_summary['common_first_date'].date().isoformat()} to "
+        f"{fusion_summary['common_last_date'].date().isoformat()} · {fusion_summary['observations']:,} observations. "
         "This sample is not evidence that either fund is universally better."
     )
     fusion_table = artifacts.fusion_comparison[[
@@ -635,15 +775,13 @@ with tab_fusion:
     fusion_returns["Fund"] = fusion_returns["fund_id"].map(labels)
     fusion_left, fusion_right = st.columns(2)
     with fusion_left:
-        st.plotly_chart(
+        _render_plotly(
             _line_chart(fusion_returns, x="date", y="growth_net", color="Fund", title="Net growth of $1", y_title="Growth of $1"),
-            width="stretch",
             key="fusion_growth",
         )
     with fusion_right:
-        st.plotly_chart(
+        _render_plotly(
             _line_chart(fusion_returns, x="date", y="drawdown_net", color="Fund", title="Net drawdown", y_title="Drawdown", percent_axis=True),
-            width="stretch",
             key="fusion_drawdown",
         )
     cost_comparison = artifacts.fusion_comparison[["fund_id", "total_turnover", "total_trading_cost"]].copy()
@@ -663,7 +801,7 @@ with tab_fusion:
     )
     cost_chart.update_layout(template="plotly_white", height=420, legend_title_text="")
     cost_chart.update_yaxes(tickformat=".2%")
-    st.plotly_chart(cost_chart, width="stretch", key="fusion_costs")
+    _render_plotly(cost_chart, key="fusion_costs")
 
     st.subheader("Sector multiplier activity")
     st.caption("Grey × marks are missing/no-tilt multiplier 1.0; coloured points are active fixed-rule multipliers.")
@@ -692,12 +830,17 @@ with tab_fusion:
     change_chart.update_layout(template="plotly_white", height=500, coloraxis_showscale=False)
     change_chart.update_xaxes(tickformat=".2%", title="Augmented minus base target weight")
     change_chart.update_yaxes(title="")
-    st.plotly_chart(change_chart, width="stretch", key="fusion_latest_changes")
+    _render_plotly(change_chart, key="fusion_latest_changes")
+    latest_fusion_display = _format_display_dates(
+        latest_fusion, ["as_of_date", "latest_signal_source_date"]
+    )
     st.dataframe(
-        latest_fusion,
+        latest_fusion_display,
         hide_index=True,
         width="stretch",
         column_config={
+            "as_of_date": st.column_config.TextColumn(width="small"),
+            "latest_signal_source_date": st.column_config.TextColumn(width="small"),
             "base_weight": st.column_config.NumberColumn(format="percent"),
             "augmented_weight": st.column_config.NumberColumn(format="percent"),
             "weight_change": st.column_config.NumberColumn(format="percent"),

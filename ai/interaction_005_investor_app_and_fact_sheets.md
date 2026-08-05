@@ -479,3 +479,27 @@ CHUHAO PENG accepted Interaction 004's technical implementation after independen
 - `streamlit_app.py`
 - `tests/test_app_utils.py`
 - `tests/test_streamlit_app.py`
+
+## Post-review visual correction
+
+Browser review found a real conflict between the App's forced light page background and inherited dark Streamlit widget/text styling. It affected page text, inactive tabs, form labels, captions, expanders, metric cards, alerts, data tables, and Plotly charts, creating unreadable pale-on-white text and mixed light/dark surfaces.
+
+The correction explicitly locks Streamlit to the approved light theme, applies narrowly scoped dark-text CSS outside the dark hero banner, keeps the active tab distinct, and renders every Plotly figure through one light-presentation helper with `theme=None`. Visible OOS and effective dates are formatted as `YYYY-MM-DD`; comparison columns are ordered and formatted for normal laptop width; and the return-versus-volatility scatter uses human-readable fund-group and hover labels. The Fusion underperformance and higher-turnover result remains visible and was not retuned.
+
+No analytical artifact, CSV value, PNG source data, portfolio output, sentiment output, Fusion output, runner, methodology, parameter, or interpretation changed. A final `git diff -- results src scripts context requirements.txt requirements-dev.txt AGENTS.md` was empty.
+
+Validation results:
+
+- focused Streamlit AppTest: `20 passed in 10.62s`, including all 13 fact sheets and no uncaught exception;
+- full suite: the sandboxed first run had `76 passed` and one existing online smoke-test DNS failure; the final approved official-source run completed with `77 passed in 13.76s`;
+- `python scripts/check_handin.py`: 21 checks passed with the expected cache and unwritten-report reminders;
+- `git diff --check`: passed;
+- headless health check at `http://127.0.0.1:8766/_stcore/health`: HTTP `200`, body `ok`, followed by a clean stop;
+- manual Browser review at `1366 × 900`: all five tabs, the expanded disclosure, controls, tables, charts, labels, captions, and metric cards were readable; computed-style checks found no pale/white heading, paragraph, field label, caption, tab label, or expander text outside the hero banner, and browser logs contained no errors.
+
+Exact changed-file list:
+
+- `.streamlit/config.toml`
+- `ai/interaction_005_investor_app_and_fact_sheets.md`
+- `streamlit_app.py`
+- `tests/test_streamlit_app.py`
