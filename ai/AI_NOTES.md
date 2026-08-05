@@ -1,8 +1,8 @@
 # AI notes
 
-I have used Codex for repository setup and documentation, and I plan to use it for later implementation. I remain responsible for directing, reviewing, testing, and approving that work.
+I used ChatGPT for course-material review and project planning, and I will use it for independent audit. I used Codex for repository work and documentation and will use it for implementation. I remain responsible for directing, reviewing, testing, and approving AI-assisted work.
 
-Before empirical work, I, CHUHAO PENG, reviewed and approved the product design, calendar treatment, out-of-sample backtest design, missing-news treatment, sentiment lag, and fixed-fusion decisions recorded for Project B.
+I reviewed the proposed product and methodology and allowed them to be recorded as a working design baseline; unresolved implementation choices still require review before use.
 
 Interaction 001 generated no analytical result. Its smoke-test failure occurred because the official data ZIP was not available locally. No data were fabricated, and no prohibited download occurred.
 
