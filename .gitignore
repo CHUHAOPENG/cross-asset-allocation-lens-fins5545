@@ -3,6 +3,9 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Raw hosted data is never committed - it loads from the hosted ZIP via src/data_access.py
 data/
@@ -19,3 +22,7 @@ data/
 # Secrets / local
 .streamlit/secrets.toml
 .env
+.DS_Store
+._*
+__MACOSX/
+*.zip

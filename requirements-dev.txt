@@ -1,7 +1,8 @@
-# Build / reproduction-only dependencies (NOT needed by the deployed app).
-# Install alongside requirements.txt to run scripts/run_part_b.py end to end:
-#     pip install -r requirements.txt -r requirements-dev.txt
-# Keep these OUT of the deployed app so Streamlit cold starts stay fast - the app
-# should load precomputed artifacts from results/, not score sentiment at runtime.
-# Exact implementation used to build both isolated analysers.
+# Install with requirements.txt for analytical reproduction, report artifacts,
+# and tests. These packages are not imported by the deployed app.
+scipy>=1.11
+pyarrow>=12.0
+requests>=2.31
+matplotlib>=3.7
 vaderSentiment==3.3.2
+pytest>=8,<10
