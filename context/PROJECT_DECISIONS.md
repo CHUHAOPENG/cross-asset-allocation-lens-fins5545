@@ -1,6 +1,6 @@
 # Project B predeclared decisions
 
-Status: design baseline for Interaction 001. This file predeclares methodology before Project B empirical work. It does not claim that portfolios, sentiment scores, backtests, figures, or app artifacts exist.
+Status: portfolio methodology is locked and implemented through Interaction 002. Portfolio outputs exist and passed technical review, but no economic “best fund” conclusion has been approved. The sentiment decisions below remain a predeclared design until Interaction 003 is implemented and reviewed; fusion, figures, report, and app work remain pending.
 
 ## Product
 
@@ -53,7 +53,7 @@ Status: design baseline for Interaction 001. This file predeclares methodology b
 ## Sentiment design
 
 - Baseline: plain VADER.
-- Main model: finance-extended VADER. The exact frozen lexicon artifact and collision precedence remain unresolved; once approved they must be versioned and must not change between scoring and reproduction.
+- Main model: finance-extended VADER using the frozen approved artifact `resources/finance_vader_lexicon.csv`. Its SHA-256 is `4c16eeab9edec5c970234d0a30bcbd89c84c21abf94e4677b8b9568c8b6a28c6`.
 - Text input: the raw supplied headline title unchanged. Preserve casing, punctuation, boosters, contrast, and negation; do not score the Part A descriptive-token copy.
 - Aggregation: score each headline; take the arithmetic mean within ticker and mapped equity day; then take an equal-weight mean across observed ticker-days within sector and day.
 - Missingness: a ticker-day with no supplied headline is missing, not zero and not neutral. Sector coverage is the number of sector tickers with at least one supplied mapped headline divided by the number of eligible sector tickers.
@@ -61,6 +61,35 @@ Status: design baseline for Interaction 001. This file predeclares methodology b
 - Trading standardisation: expanding, causal z-scores with a minimum of 252 available historical sector observations; the mean and sample standard deviation at a signal date use only values available through that signal date. A zero/undefined historical standard deviation yields a missing z-score, not zero.
 - Descriptive standardisation: a full-sample z-score may be used only in clearly labelled historical figures and must never enter portfolio weights.
 - Missing-sector carry: after lagging, carry the last available sector z-score for at most five equity trading days. Its effective coverage decays linearly by multiplying the source-day coverage by `(6 - age) / 6` for ages 1 through 5. From age 6 onward the signal is missing and no tilt is applied.
+
+### Frozen finance lexicon provenance and installation
+
+- Reproduce the local Week 8 approved workflow from:
+  - `/Users/chris/Desktop/fins 5545/fins-agent/fins2026/week_8/vader_model/09_build_finance_lexicon.py`
+  - `/Users/chris/Desktop/fins 5545/fins-agent/fins2026/week_8/vader_model/10_extend_and_test_vader.py`
+  - `/Users/chris/Desktop/fins 5545/fins-agent/fins2026/week_8/vader_model/provided_data/candidate_terms.txt`
+  - `/Users/chris/Desktop/fins 5545/fins-agent/fins2026/week_8/vader_model/provided_data/raw_ratings/rater_01.txt` through `rater_10.txt`
+  - `/Users/chris/Desktop/fins 5545/fins-agent/fins2026/week_8/vader_model/provided_data/human_review.csv`
+- The workflow aggregates 390 frozen integer ratings for 39 candidate terms across 10 raters using the arithmetic mean and sample standard deviation, rounds both to three decimals, requires `sd_rating < 2.5` and `abs(mean_rating) >= 0.5`, and then requires the recorded human decision `approve`.
+- The frozen approved set contains 29 terms: 20 single words and 9 phrases. Ten terms are rejected. The approved artifact is byte-identical to the Week 8 output `output/tables/09_finance_lexicon_approved.csv`; neither approvals nor values may be edited after observing Project B results.
+- Approved single words update only the finance analyser's lexicon. An approved exact-token collision with base VADER uses the frozen finance value. Approved phrases use the course `SPECIAL_CASES` treatment and add a missing final head word at `+0.1` or `-0.1` according to phrase direction so VADER checks the phrase.
+- Preserve the course booster candidates: `sharply`, `materially`, and `steeply` use `B_INCR`; `modestly` and `marginally` use `B_DECR`; only candidates absent from the base booster dictionary are added. Plain and finance analysers must remain isolated so module-level phrase or booster state cannot contaminate the other model or later tests.
+- Changed finance-term coverage, a changed compound score, or a changed sector index is not evidence of improved predictive accuracy without separate labelled validation.
+
+### Sector membership and coverage
+
+- Derive ticker-sector membership only from cleaned official equity prices and reject inconsistent mappings.
+- On an observed equity date, an eligible sector ticker is a mapped equity ticker with a finite adjusted-close simple return on that date.
+- Observed ticker count is the number of eligible sector tickers with at least one supplied headline mapped to that date. Coverage is `observed_ticker_count / eligible_ticker_count`; it is missing when the denominator is zero.
+- A ticker-day without a supplied headline remains missing. A sector-day with no observed ticker sentiment remains missing. Never replace either with zero or neutral sentiment.
+
+### Sector signal construction
+
+- Score each distinct original unmodified headline title once with isolated plain and finance-extended VADER analysers, then join scores back to the valid Rule A rows.
+- Apply Rule A before sentiment aggregation. Take an arithmetic mean from headlines to ticker-day, then an equal-weight arithmetic mean across observed eligible ticker-days to sector-day.
+- For both `plain_vader` and `finance_vader`, transform sector compound to the descriptive index `50 * (compound + 1)`.
+- Calculate full-sample z-scores only as labelled descriptive fields. Calculate trading z-scores causally and separately by sector and model with an expanding mean and sample standard deviation, at least 252 available historical sector observations, and information through the source date only. Zero or undefined standard deviation produces a missing z-score.
+- Shift a completed source-date causal z-score by exactly one observed equity trading day. At the first eligible effective date its age is 0. If subsequent source days are wholly missing, carry ages 1 through 5 only and set effective coverage to `source_coverage * (6 - age) / 6`. At age 6 onward, the signal and effective coverage are missing. Full-sample z-scores never enter the trading signal.
 
 ## Fusion design
 
@@ -83,7 +112,6 @@ These are design claims only until implemented and evaluated.
 
 The following must be resolved in a later documented decision before code or empirical output relies on them:
 
-1. The frozen finance lexicon source, its package/version or checked-in artifact, term collision precedence, and an evaluation plan that distinguishes changed coverage from improved accuracy.
-2. Figure design, report exhibit mapping, and app controls beyond the fixed product journey. These presentation choices must not alter the methodology.
+1. Figure design, report exhibit mapping, and app controls beyond the fixed product journey. These presentation choices must not alter the methodology.
 
 No unresolved item may be filled in by convenience after viewing full-sample results. Record the decision, rationale, and tests first.

@@ -1,8 +1,8 @@
 # AI notes
 
-I used ChatGPT for course-material review and project planning, and I will use it for independent audit. I used Codex for repository work and documentation and will use it for implementation. I remain responsible for directing, reviewing, testing, and approving AI-assisted work.
+I used ChatGPT for course-material review, project planning, and independent audit. I used Codex for repository setup, documentation, and the implemented data foundation and walk-forward portfolio engine. I remain responsible for directing, reviewing, testing, and approving AI-assisted work.
 
-I reviewed the proposed product and methodology and allowed them to be recorded as a working design baseline; unresolved implementation choices still require review before use.
+After independent review, I accepted the implemented portfolio engine. Sentiment, fusion, app, and report work remain pending review or implementation as applicable, and I have not approved a best-fund economic conclusion.
 
 Interaction 001 generated no analytical result. Its smoke-test failure occurred because the official data ZIP was not available locally. No data were fabricated, and no prohibited download occurred.
 
