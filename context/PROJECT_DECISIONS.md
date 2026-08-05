@@ -1,6 +1,6 @@
 # Project B predeclared decisions
 
-Status: portfolio and sentiment methodologies are locked, implemented, and technically reviewed through Interaction 003. Interaction 004 implemented the fixed fusion design and focused fusion figures, which remain pending review. No economic conclusion or fusion result has been approved; report and app work remain pending.
+Status: portfolio, sentiment, and fusion methodologies are locked, implemented, and technically reviewed through Interaction 004. The fixed overlay produced a modest negative result in this OOS sample and higher turnover than base Equity Risk Parity. This is descriptive OOS evidence, not proof for or against sentiment predictability, and it does not justify retuning. App work is beginning; the final report, economic narrative, and deployment remain pending.
 
 ## Product
 
@@ -117,10 +117,20 @@ Status: portfolio and sentiment methodologies are locked, implemented, and techn
 
 These are design claims only until implemented and evaluated.
 
+## App design
+
+- Product: **Cross-Asset Allocation Lens**, for a self-directed investor or junior portfolio analyst to compare systematic funds, inspect a fact sheet, test a fund-level allocation, and review sentiment and fusion evidence. It is analytical and educational only, not personalised financial advice.
+- Data boundary: the app reads only committed precomputed files under `results/`. It never loads official raw data, invokes `data_access`, ETL, optimisation, backtests, VADER, or fusion code, and never downloads data. Every relevant date and sample period is shown.
+- Performance display: net results are the default, with gross/net comparison where useful. The app identifies 252- versus 365-period annualisation. Current holdings are labelled **latest target weights from the most recent rebalance**, never live holdings. Management fees, taxes, and investor-level cross-fund costs are excluded.
+- Allocation simulator: use only precomputed selected-fund net returns on their exact common OOS date intersection. Require two to six non-negative allocations summing to 100%; never optimise or recommend the allocation.
+- Buy and Hold: allocate the initial dollar across selected fund sleeves and compound each sleeve independently, allowing weights to drift without resetting.
+- Monthly Reset: allow sleeve values to drift daily, then reset them to the selected target allocation on the first available common-period date of each new calendar month using the previous total portfolio value.
+- The allocation simulator applies no additional cross-fund transaction cost, management fee, or tax. This limitation is disclosed visibly.
+
 ## Unresolved implementation details
 
 The following must be resolved in a later documented decision before code or empirical output relies on them:
 
-1. Figure design, report exhibit mapping, and app controls beyond the fixed product journey. These presentation choices must not alter the methodology.
+1. Final report exhibit mapping and narrative choices. These presentation choices must not alter the methodology.
 
 No unresolved item may be filled in by convenience after viewing full-sample results. Record the decision, rationale, and tests first.

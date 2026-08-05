@@ -14,6 +14,7 @@ data/
 !results/**
 !resources/
 !resources/finance_vader_lexicon.csv
+!resources/interaction_004_analytic_hashes.csv
 
 # Secrets / local
 .streamlit/secrets.toml
