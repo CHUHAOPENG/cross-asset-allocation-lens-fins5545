@@ -16,6 +16,8 @@ from src.portfolios import (
     estimate_weights,
     performance_metrics,
     project_capped_simplex,
+    shrunk_covariance,
+    shrunk_expected_returns,
     validate_weights,
 )
 
@@ -114,3 +116,60 @@ def test_performance_metrics_use_requested_252_or_365_annualisation() -> None:
     assert metrics_365["annualised_volatility"] / metrics_252["annualised_volatility"] == pytest.approx(
         np.sqrt(365 / 252)
     )
+
+
+def test_minimum_variance_is_no_worse_than_capped_equal_weight_variance() -> None:
+    history = _history()
+    covariance = shrunk_covariance(history)
+    equal = estimate_weights(history, "equal_weight")
+    minimum = estimate_weights(history, "minimum_variance")
+    assert minimum.solver_success
+    equal_variance = float(equal.weights @ covariance @ equal.weights)
+    minimum_variance = float(minimum.weights @ covariance @ minimum.weights)
+    assert minimum_variance <= equal_variance + 1e-10
+
+
+def test_successful_maximum_sharpe_is_no_worse_than_capped_equal_weight() -> None:
+    history = _history()
+    covariance = shrunk_covariance(history)
+    expected = shrunk_expected_returns(history)
+    equal = estimate_weights(history, "equal_weight")
+    maximum = estimate_weights(history, "max_sharpe")
+    assert maximum.solver_success
+
+    def sharpe(weights: pd.Series) -> float:
+        return float(expected @ weights / np.sqrt(weights @ covariance @ weights))
+
+    assert sharpe(maximum.weights) >= sharpe(equal.weights) - 1e-10
+
+
+def test_successful_risk_parity_has_approximately_equal_percentage_contributions() -> None:
+    rng = np.random.default_rng(91)
+    covariance_target = np.array([
+        [0.0004, 0.00005, 0.00003, 0.00002],
+        [0.00005, 0.0003, 0.00004, 0.00001],
+        [0.00003, 0.00004, 0.0005, 0.00006],
+        [0.00002, 0.00001, 0.00006, 0.00035],
+    ])
+    history = pd.DataFrame(
+        rng.multivariate_normal(np.zeros(4), covariance_target, size=2000),
+        columns=["AAA", "BBB", "CCC", "DDD"],
+    )
+    estimate = estimate_weights(history, "risk_parity")
+    assert estimate.solver_success
+    covariance = shrunk_covariance(history)
+    covariance_weights = covariance @ estimate.weights
+    portfolio_variance = float(estimate.weights @ covariance_weights)
+    percentage_contributions = estimate.weights.to_numpy() * covariance_weights / portfolio_variance
+    assert percentage_contributions == pytest.approx(np.full(4, 0.25), abs=2e-3)
+
+
+@pytest.mark.parametrize("method", METHODS)
+def test_all_optimisers_are_deterministic_for_identical_inputs(method: str) -> None:
+    history = _history()
+    first = estimate_weights(history, method)
+    second = estimate_weights(history, method)
+    assert first.weights.to_numpy() == pytest.approx(second.weights.to_numpy(), abs=1e-13)
+    assert first.solver_success == second.solver_success
+    assert first.fallback_used == second.fallback_used
+    assert first.fallback_source == second.fallback_source

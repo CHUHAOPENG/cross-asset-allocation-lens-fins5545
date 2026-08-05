@@ -4,3 +4,5 @@
 # Keep these OUT of the deployed app so Streamlit cold starts stay fast - the app
 # should load precomputed artifacts from results/, not score sentiment at runtime.
 nltk>=3.8
+# Exact local Week 8 implementation used to build both isolated analysers.
+vaderSentiment==3.3.2

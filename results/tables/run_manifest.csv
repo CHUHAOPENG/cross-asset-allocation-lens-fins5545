@@ -1,0 +1,65 @@
+key,value
+run_timestamp_utc,2026-08-05T10:09:18+00:00
+project_name,Cross-Asset Allocation Lens
+git_head_before_run,42822ed136a23dccf653ff36135943bc3aa678bc
+python_version,3.13.13
+package.pandas.version,3.0.3
+package.numpy.version,2.4.6
+package.scipy.version,1.17.1
+package.nltk.version,3.6.2
+package.vaderSentiment.version,3.3.2
+package.vader.version,not installed
+official_data_source,https://drive.google.com/uc?export=download&id=1h0Wy12_qgR_NZJqtSxI9LwPEVKgp5DzH
+official_source_zip_sha256,9740a68c63e4edf2fbe03d91a5356728e9355a1070580052b66893d4c7463010
+sample_end_date,2023-12-31
+portfolio.initial_window.equity,252
+portfolio.initial_window.crypto,365
+portfolio.initial_window.combined,252
+portfolio.rebalance,last observed calendar-month date; effective next observed date
+portfolio.asset_cap,"min(0.35, 5 / eligible_asset_count)"
+portfolio.covariance,sample covariance; 10% diagonal shrinkage
+portfolio.maximum_sharpe_mean,expanding arithmetic mean; 50% cross-sectional shrinkage
+portfolio.solver,SciPy SLSQP; maxiter=1000; ftol=1e-10
+portfolio.weight_tolerances,sum=1e-8; lower=1e-10; cap=1e-8
+portfolio.risk_free_rate,0
+portfolio.cost_rate,0.001 times one-way turnover
+portfolio.annualisation,Equity=252; Crypto=365; Combined=252
+portfolio.methods,"equal_weight,minimum_variance,risk_parity,max_sharpe"
+portfolio.fallback,previous feasible target else capped equal weight; always logged
+sentiment.models,"plain_vader,finance_vader"
+sentiment.rule_a,Rule A — Conservative Calendar-Date Mapping
+sentiment.raw_text,original title unchanged
+sentiment.finance_lexicon_sha256,4c16eeab9edec5c970234d0a30bcbd89c84c21abf94e4677b8b9568c8b6a28c6
+sentiment.finance_terms,29 approved; 20 words; 9 phrases; 10 rejected
+sentiment.aggregation,headline mean to ticker-day; equal-weight ticker-day mean to sector-day
+sentiment.coverage,observed eligible ticker-days / eligible tickers; no-news remains missing
+sentiment.index_0_100,50 * (compound + 1)
+sentiment.causal_z,expanding by sector/model; min_periods=252; sample std; through source day
+sentiment.trading_lag,exactly one observed equity day
+sentiment.carry,ages 1-5; age 6 expires
+sentiment.coverage_decay,source_coverage * (6 - age) / 6
+sentiment.full_sample_z,descriptive only; prohibited from trading_z
+output.results/data/fund_returns.csv.rows,10404
+output.results/data/fund_returns.csv.sha256,709322f5158707667a220dccb30c1713032264d4378d0c8de412693a3d432756
+output.results/data/fund_weights.csv.rows,17280
+output.results/data/fund_weights.csv.sha256,8f9c45fb2e20bea0f3353d0a830100c60b15c2c1a746790be39a63c395f872b7
+output.results/data/sector_sentiment_index.csv.rows,20120
+output.results/data/sector_sentiment_index.csv.sha256,307b5d570e6bfe7f7d2bebfc662905a6dff6bbd8f38f29b2220915a04ac711c9
+output.results/data/ticker_day_sentiment.csv.rows,75924
+output.results/data/ticker_day_sentiment.csv.sha256,18b7fcef771e20f8589714f2ab0199b44d47fa8924402266ee4900eb4e27a6c6
+output.results/data/sector_sentiment_signal.csv.rows,20120
+output.results/data/sector_sentiment_signal.csv.sha256,55c2ef0fe17a33db3de57183f000d9cba1bd681709d9978bdef950f5848437b7
+output.results/tables/performance_metrics.csv.rows,12
+output.results/tables/performance_metrics.csv.sha256,a1687e1de010ffb8b4349c46dbbc9b8aa94c110bf98e08817d03ef20f2aa7945
+output.results/tables/solver_audit.csv.rows,564
+output.results/tables/solver_audit.csv.sha256,d9a27c3017175e088298ce2f5dd86e337936e2157c843e46cf3085ac7e39c339
+output.results/tables/portfolio_data_audit.csv.rows,65
+output.results/tables/portfolio_data_audit.csv.sha256,90607d31b514c0089db3ec1d4545a05667a7c729a297e471957cb77e10862568
+output.results/tables/news_mapping_audit.csv.rows,146836
+output.results/tables/news_mapping_audit.csv.sha256,f396f8842c09e82e2aff2feec62ccd59b4145bf987c8b80832d489cada237fd8
+output.results/tables/sentiment_data_audit.csv.rows,14
+output.results/tables/sentiment_data_audit.csv.sha256,448fd2c901a2adfa1c548929aef49ef4c0e7bed53db69c2f7f41cfe3bb4d5d92
+output.results/tables/sentiment_model_comparison.csv.rows,20
+output.results/tables/sentiment_model_comparison.csv.sha256,776feceb1eb1d05a069190c7285d1198a63789ca1b6714d3a72397a7554cf7a0
+output.results/tables/finance_lexicon_audit.csv.rows,29
+output.results/tables/finance_lexicon_audit.csv.sha256,e6781262faecf1c2d5e38152ce36380c4b922c354a9ca782f4e8793d584ed852

@@ -12,6 +12,8 @@ data/
 *.parquet
 *.csv
 !results/**
+!resources/
+!resources/finance_vader_lexicon.csv
 
 # Secrets / local
 .streamlit/secrets.toml

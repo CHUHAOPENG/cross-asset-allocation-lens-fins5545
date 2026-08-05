@@ -14,6 +14,9 @@ import pandas as pd
 from src.etl import AUDIT_COLUMNS
 
 
+RULE_A_LABEL = "Rule A — Conservative Calendar-Date Mapping"
+
+
 def _require_columns(frame: pd.DataFrame, columns: Iterable[str], label: str) -> None:
     missing = sorted(set(columns).difference(frame.columns))
     if missing:
@@ -123,6 +126,61 @@ def build_return_panels(
     return panels, audit
 
 
+def map_news_rule_a(
+    headlines: pd.DataFrame,
+    equity_dates: Iterable[Any],
+) -> pd.DataFrame:
+    """Map every cleaned headline using the approved calendar-date Rule A.
+
+    The original UTC timestamp is retained.  Its clock component is never
+    interpreted as verified publication time or as an after-close indicator.
+    Rows beyond the final observed equity date remain in the audit with a
+    missing mapped date.
+    """
+    required = ["date", "ticker", "sector", "title"]
+    _require_columns(headlines, required, "clean headlines")
+    work = headlines.copy(deep=True).reset_index(drop=True)
+    timestamps = pd.to_datetime(work["date"], errors="coerce", utc=True)
+    headline_dates = timestamps.dt.tz_convert("UTC").dt.tz_localize(None).dt.normalize()
+    calendar = observed_equity_calendar(equity_dates)
+    calendar_values = calendar.to_numpy(dtype="datetime64[ns]")
+    source_values = headline_dates.to_numpy(dtype="datetime64[ns]")
+    mapped_values = np.full(len(work), np.datetime64("NaT"), dtype="datetime64[ns]")
+    valid = ~pd.isna(source_values)
+    positions = np.searchsorted(calendar_values, source_values[valid], side="left")
+    within = positions < len(calendar_values)
+    valid_locations = np.flatnonzero(valid)
+    mapped_values[valid_locations[within]] = calendar_values[positions[within]]
+    mapped = pd.Series(pd.to_datetime(mapped_values), index=work.index)
+    midnight = timestamps.notna() & timestamps.eq(timestamps.dt.normalize())
+    same = mapped.notna() & mapped.eq(headline_dates)
+    shifted = mapped.notna() & mapped.gt(headline_dates)
+    output = pd.DataFrame({
+        "ticker": work["ticker"],
+        "sector": work["sector"],
+        "title": work["title"],
+        "original_utc_timestamp": timestamps,
+        "headline_calendar_date": headline_dates,
+        "mapped_equity_trading_date": mapped,
+        "mapping_delay_calendar_days": (mapped - headline_dates).dt.days.astype("Int64"),
+        "mapping_status": np.select(
+            [same, shifted],
+            ["same_trading_date", "shifted_to_next_trading_date"],
+            default="unmapped_final_sample_boundary",
+        ),
+        "timestamp_time_of_day_status": np.where(
+            midnight,
+            "calendar_date_only_midnight",
+            "non_midnight_time_unverified",
+        ),
+        "mapping_rule": RULE_A_LABEL,
+    })
+    return output.sort_values(
+        ["ticker", "headline_calendar_date", "original_utc_timestamp", "title"],
+        kind="mergesort",
+    ).reset_index(drop=True)
+
+
 def assemble_headline_panel(
     headlines: pd.DataFrame,
     equity_dates: Iterable[Any],
@@ -135,21 +193,8 @@ def assemble_headline_panel(
     sentiment work.
     """
     _require_columns(headlines, ["date", "ticker", "sector", "title"], "headlines")
-    work = headlines.copy(deep=True)
-    timestamp = pd.to_datetime(work["date"], errors="coerce", utc=True)
-    source_date = timestamp.dt.tz_convert("UTC").dt.tz_localize(None).dt.normalize()
-    calendar = observed_equity_calendar(equity_dates)
-    calendar_values = calendar.to_numpy(dtype="datetime64[ns]")
-    source_values = source_date.to_numpy(dtype="datetime64[ns]")
-    mapped_values = np.full(len(work), np.datetime64("NaT"), dtype="datetime64[ns]")
-    valid = ~pd.isna(source_values)
-    positions = np.searchsorted(calendar_values, source_values[valid], side="left")
-    within = positions < len(calendar_values)
-    source_locations = np.flatnonzero(valid)
-    mapped_values[source_locations[within]] = calendar_values[positions[within]]
-    work["mapped_equity_trading_date"] = pd.to_datetime(mapped_values)
-    work["original_utc_timestamp"] = timestamp
-    valid_work = work.loc[work["mapped_equity_trading_date"].notna()].copy()
+    mapped = map_news_rule_a(headlines, equity_dates)
+    valid_work = mapped.loc[mapped["mapped_equity_trading_date"].notna()].copy()
     grouped = (
         valid_work.groupby(
             ["mapped_equity_trading_date", "ticker", "sector"],

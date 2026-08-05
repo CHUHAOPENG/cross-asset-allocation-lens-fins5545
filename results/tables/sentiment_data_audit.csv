@@ -1,0 +1,15 @@
+check_name,value,status,message
+rule_a_clean_headline_rows,146836,pass,Every cleaned headline remains in the Rule A audit.
+rule_a_same_trading_date_rows,134279,pass,Headline UTC calendar date is an observed equity date.
+rule_a_shifted_to_next_trading_date_rows,12551,pass,Non-observed dates map to the next observed equity date.
+rule_a_unmapped_final_boundary_rows,6,pass,Rows remain in audit but are excluded from scoring.
+original_timestamp_missing_rows,0,pass,Cleaned source timestamps are preserved.
+distinct_titles_scored,105330,pass,Each distinct raw title is scored once per model.
+ticker_day_rows,75924,pass,Observed ticker-day-model aggregates only; missing news is not filled.
+sector_index_rows,20120,pass,"Complete observed-equity-date, sector, and model grid."
+missing_sector_compound_rows,476,pass,"Missing sector news remains missing, not neutral."
+coverage_out_of_bounds_rows,0,pass,"Non-missing coverage lies in [0, 1]."
+invalid_nonmissing_signal_age_rows,0,pass,Only ages 0 through 5 can carry a trading signal.
+sector_index_duplicate_keys,0,pass,Sector-index key is unique.
+ticker_day_duplicate_keys,0,pass,Ticker-day key is unique.
+signal_duplicate_keys,0,pass,Trading-signal key is unique.

@@ -1,0 +1,30 @@
+term,term_type,valence
+buyback,word,1.8
+covenant breach,phrase,-3.1
+default,word,-3.8
+delisting,word,-2.9
+dilution,word,-2.0
+dovish,word,1.0
+downgrade,word,-2.8
+earnings beat,phrase,2.9
+earnings miss,phrase,-2.9
+going concern,phrase,-3.9
+guidance cut,phrase,-2.9
+guidance raise,phrase,2.9
+hawkish,word,-1.0
+headwind,word,-1.8
+impairment,word,-2.8
+insolvency,word,-3.9
+litigation,word,-2.0
+material weakness,phrase,-3.0
+outperform,word,2.8
+oversubscribed,word,2.0
+profit warning,phrase,-3.0
+record revenue,phrase,3.0
+restatement,word,-2.8
+restructuring,word,-1.9
+subpoena,word,-2.2
+tailwind,word,1.8
+underperform,word,-2.8
+upgrade,word,2.8
+writedown,word,-2.8
