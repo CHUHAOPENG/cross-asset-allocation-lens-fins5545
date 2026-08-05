@@ -1,0 +1,14 @@
+fund_id,display_name,universe,method,short_description,first_live_date,last_date,periods_per_year,is_sentiment_augmented,base_fund_id
+combined_equal_weight,Combined — Equal Weight,combined,equal_weight,Capped benchmark that distributes capital evenly across eligible assets.,2021-01-04,2023-12-29,252,False,
+combined_max_sharpe,Combined — Maximum Sharpe,combined,max_sharpe,Walk-forward long-only target that maximises estimated return per unit of risk.,2021-01-04,2023-12-29,252,False,
+combined_min_variance,Combined — Minimum Variance,combined,minimum_variance,Walk-forward long-only target that minimises estimated portfolio variance.,2021-01-04,2023-12-29,252,False,
+combined_risk_parity,Combined — Risk Parity,combined,risk_parity,Walk-forward long-only target that balances percentage risk contributions.,2021-01-04,2023-12-29,252,False,
+crypto_equal_weight,Crypto — Equal Weight,crypto,equal_weight,Capped benchmark that distributes capital evenly across eligible assets.,2021-01-01,2023-12-31,365,False,
+crypto_max_sharpe,Crypto — Maximum Sharpe,crypto,max_sharpe,Walk-forward long-only target that maximises estimated return per unit of risk.,2021-01-01,2023-12-31,365,False,
+crypto_min_variance,Crypto — Minimum Variance,crypto,minimum_variance,Walk-forward long-only target that minimises estimated portfolio variance.,2021-01-01,2023-12-31,365,False,
+crypto_risk_parity,Crypto — Risk Parity,crypto,risk_parity,Walk-forward long-only target that balances percentage risk contributions.,2021-01-01,2023-12-31,365,False,
+equity_equal_weight,Equity — Equal Weight,equity,equal_weight,Capped benchmark that distributes capital evenly across eligible assets.,2021-01-04,2023-12-29,252,False,
+equity_max_sharpe,Equity — Maximum Sharpe,equity,max_sharpe,Walk-forward long-only target that maximises estimated return per unit of risk.,2021-01-04,2023-12-29,252,False,
+equity_min_variance,Equity — Minimum Variance,equity,minimum_variance,Walk-forward long-only target that minimises estimated portfolio variance.,2021-01-04,2023-12-29,252,False,
+equity_risk_parity,Equity — Risk Parity,equity,risk_parity,Walk-forward long-only target that balances percentage risk contributions.,2021-01-04,2023-12-29,252,False,
+equity_risk_parity_sentiment,Equity — Risk Parity + Sentiment,equity,risk_parity_sentiment,Fixed coverage-aware finance-sentiment overlay on Equity Risk Parity.,2021-01-04,2023-12-29,252,True,equity_risk_parity

@@ -758,11 +758,16 @@ def generate_fusion_figures(
     ax.set_yticks(range(len(sectors)), labels=sectors)
     ax.xaxis.set_major_locator(mdates.YearLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-    ax.set_title("Coverage-Aware Sector Multipliers at Rebalance Dates")
+    ax.set_title("Coverage-Aware Sector Multipliers at Rebalance Dates", pad=58)
     ax.set_xlabel("Target effective date")
     ax.set_ylabel("Sector")
     ax.grid(axis="x", alpha=0.2)
-    ax.legend(loc="upper left", frameon=False)
+    ax.legend(
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.01),
+        ncol=2,
+        frameon=False,
+    )
     colorbar = fig.colorbar(points, ax=ax, pad=0.02)
     colorbar.set_label("Multiplier (active signals)")
     fig.text(0.01, 0.01, source_note, fontsize=8, color="#555555")

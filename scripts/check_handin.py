@@ -49,7 +49,10 @@ placeholder_left = [
 check(not placeholder_left, "no leftover zID placeholder",
       f"placeholder {placeholder} still in: {placeholder_left[:3]}")
 
-allowed_derived_resources = {"resources/finance_vader_lexicon.csv"}
+allowed_derived_resources = {
+    "resources/finance_vader_lexicon.csv",
+    "resources/interaction_004_analytic_hashes.csv",
+}
 data_files = [str(p.relative_to(ROOT)) for p in ROOT.rglob("*")
               if p.suffix.lower() in {".parquet", ".csv"}
               and "results" not in p.parts

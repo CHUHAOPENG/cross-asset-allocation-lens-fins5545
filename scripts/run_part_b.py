@@ -24,7 +24,7 @@ import pandas as pd
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
-from src import data_access, etl, features, fusion, portfolios, sentiment  # noqa: E402
+from src import app_utils, data_access, etl, features, fusion, portfolios, sentiment  # noqa: E402
 
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -36,6 +36,8 @@ OUTPUTS = {
     "ticker_day_sentiment": ROOT / "results/data/ticker_day_sentiment.csv",
     "sector_sentiment_signal": ROOT / "results/data/sector_sentiment_signal.csv",
     "fusion_sector_multipliers": ROOT / "results/data/fusion_sector_multipliers.csv",
+    "fund_catalog": ROOT / "results/data/fund_catalog.csv",
+    "fund_current_holdings": ROOT / "results/data/fund_current_holdings.csv",
     "performance_metrics": ROOT / "results/tables/performance_metrics.csv",
     "solver_audit": ROOT / "results/tables/solver_audit.csv",
     "portfolio_data_audit": ROOT / "results/tables/portfolio_data_audit.csv",
@@ -52,6 +54,7 @@ OUTPUTS = {
     "fusion_sector_multiplier_activity": ROOT / "results/figures/fusion_sector_multiplier_activity.png",
     "run_manifest": ROOT / "results/tables/run_manifest.csv",
 }
+FROZEN_ANALYTIC_HASHES_PATH = ROOT / "resources/interaction_004_analytic_hashes.csv"
 ORIGINAL_12_SUBSET_HASHES = {
     "fund_returns": "709322f5158707667a220dccb30c1713032264d4378d0c8de412693a3d432756",
     "fund_weights": "8f9c45fb2e20bea0f3353d0a830100c60b15c2c1a746790be39a63c395f872b7",
@@ -98,6 +101,28 @@ def _original_fund_subset_sha256(path: pathlib.Path) -> str:
         if fields[fund_index] in ORIGINAL_FUND_IDS:
             retained.append(line)
     return sha256("".join(retained).encode("utf-8")).hexdigest()
+
+
+def verify_frozen_interaction_004_analytics() -> int:
+    """Require every frozen Interaction 004 CSV/PNG to remain byte-identical."""
+    if not FROZEN_ANALYTIC_HASHES_PATH.is_file():
+        raise AssertionError(f"missing frozen analytical hash file: {FROZEN_ANALYTIC_HASHES_PATH}")
+    frozen = pd.read_csv(FROZEN_ANALYTIC_HASHES_PATH, dtype=str)
+    if frozen.columns.tolist() != ["path", "sha256"]:
+        raise AssertionError("frozen analytical hash schema must be path,sha256")
+    if len(frozen) != 20 or frozen["path"].duplicated().any():
+        raise AssertionError("frozen analytical hash file must contain 20 unique paths")
+    for row in frozen.itertuples(index=False):
+        path = ROOT / row.path
+        if not path.is_file():
+            raise AssertionError(f"frozen analytical artifact is missing: {row.path}")
+        actual = _file_sha256(path)
+        if actual != row.sha256:
+            raise AssertionError(
+                f"frozen Interaction 004 artifact changed: {row.path}; "
+                f"expected {row.sha256}, got {actual}"
+            )
+    return len(frozen)
 
 
 def _track_official_loader_source() -> tuple[list[dict[str, str]], Any]:
@@ -514,6 +539,12 @@ def _locked_parameter_manifest_rows() -> list[tuple[str, str]]:
         ("fusion.missing_signal_multiplier", "1.0"),
         ("fusion.projection", "existing deterministic capped-simplex projection"),
         ("fusion.parameter_selection", "predeclared; not tuned on realised fusion performance"),
+        ("app.data_boundary", "committed precomputed results only; no analytical engines or downloads"),
+        ("app.performance_default", "net returns"),
+        ("app.allocation.buy_and_hold", "initial fund sleeves compound independently without reset"),
+        ("app.allocation.monthly_reset", "reset sleeves on first common date of each calendar month"),
+        ("app.allocation.extra_cross_fund_cost", "0; disclosed limitation"),
+        ("app.allocation.constraints", "2-6 funds; non-negative; sum to 100%; no optimisation"),
     ]
 
 
@@ -537,6 +568,7 @@ def build_run_manifest(
         ("package.scipy.version", _package_version("scipy")),
         ("package.vaderSentiment.version", _package_version("vaderSentiment")),
         ("package.matplotlib.version", _package_version("matplotlib")),
+        ("package.plotly.version", _package_version("plotly")),
         ("official_data_source", official_source),
         ("official_source_zip_sha256", source_zip_sha256),
         ("sample_end_date", "2023-12-31"),
@@ -558,6 +590,7 @@ def main() -> None:
     git_head_before_run = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
     ).strip()
+    frozen_analytic_count = verify_frozen_interaction_004_analytics()
     attempts, original_fetch = _track_official_loader_source()
     try:
         equities, equity_audit = etl.load_clean_equities(return_audit=True)
@@ -661,6 +694,10 @@ def main() -> None:
         drawdown_path=OUTPUTS["fusion_drawdown"],
         activity_path=OUTPUTS["fusion_sector_multiplier_activity"],
     )
+    fund_catalog = app_utils.build_fund_catalog(performance_metrics)
+    fund_current_holdings = app_utils.build_fund_current_holdings(
+        fund_weights, fund_catalog
+    )
 
     mapping_output = mapped.copy()
     mapping_output["original_utc_timestamp"] = mapping_output[
@@ -673,6 +710,8 @@ def main() -> None:
         "ticker_day_sentiment": ticker_day,
         "sector_sentiment_signal": signals,
         "fusion_sector_multipliers": fusion_result.sector_multipliers,
+        "fund_catalog": fund_catalog,
+        "fund_current_holdings": fund_current_holdings,
         "performance_metrics": performance_metrics,
         "solver_audit": engine.solver_audit,
         "portfolio_data_audit": portfolio_audit[etl.AUDIT_COLUMNS],
@@ -687,6 +726,10 @@ def main() -> None:
     }
     for name, frame in output_frames.items():
         _write_csv(frame, OUTPUTS[name])
+
+    verified_frozen_count = verify_frozen_interaction_004_analytics()
+    if verified_frozen_count != frozen_analytic_count:
+        raise AssertionError("frozen analytical artifact count changed during the run")
 
     for name, expected_hash in ORIGINAL_12_SUBSET_HASHES.items():
         actual_hash = _original_fund_subset_sha256(OUTPUTS[name])
@@ -742,6 +785,11 @@ def main() -> None:
         f"{fusion_summary['maximum_multiplier']:.6f}] "
         f"augmented_return_rows={integrated_summary['augmented_return_rows']} "
         f"rebalances={integrated_summary['augmented_rebalances']}"
+    )
+    print(
+        "app artifacts: "
+        f"catalog_rows={len(fund_catalog)} holding_rows={len(fund_current_holdings)} "
+        f"frozen_analytics_verified={verified_frozen_count}"
     )
     print(f"manifest: rows={len(manifest)} path={OUTPUTS['run_manifest'].relative_to(ROOT)}")
 

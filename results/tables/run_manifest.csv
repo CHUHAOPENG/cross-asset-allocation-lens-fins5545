@@ -1,13 +1,14 @@
 key,value
-run_timestamp_utc,2026-08-05T10:41:52+00:00
+run_timestamp_utc,2026-08-05T11:12:56+00:00
 project_name,Cross-Asset Allocation Lens
-git_head_before_run,b4655088d3c8ccc30deb340067628d67861eafbc
+git_head_before_run,2a015ec377afea3c8eafcb7cf0813bf21f51de41
 python_version,3.13.13
 package.pandas.version,3.0.3
 package.numpy.version,2.4.6
 package.scipy.version,1.17.1
 package.vaderSentiment.version,3.3.2
 package.matplotlib.version,3.10.9
+package.plotly.version,6.8.0
 official_data_source,https://drive.google.com/uc?export=download&id=1h0Wy12_qgR_NZJqtSxI9LwPEVKgp5DzH
 official_source_zip_sha256,9740a68c63e4edf2fbe03d91a5356728e9355a1070580052b66893d4c7463010
 sample_end_date,2023-12-31
@@ -51,6 +52,12 @@ fusion.multiplier_bounds,"[0.80, 1.20]"
 fusion.missing_signal_multiplier,1.0
 fusion.projection,existing deterministic capped-simplex projection
 fusion.parameter_selection,predeclared; not tuned on realised fusion performance
+app.data_boundary,committed precomputed results only; no analytical engines or downloads
+app.performance_default,net returns
+app.allocation.buy_and_hold,initial fund sleeves compound independently without reset
+app.allocation.monthly_reset,reset sleeves on first common date of each calendar month
+app.allocation.extra_cross_fund_cost,0; disclosed limitation
+app.allocation.constraints,2-6 funds; non-negative; sum to 100%; no optimisation
 output.results/data/fund_returns.csv.rows,11157
 output.results/data/fund_returns.csv.sha256,be395020fb4ab0781a61965ac1ebc7a1f5c9c3c4cdea7ac454bfc2147306edfe
 output.results/data/fund_weights.csv.rows,19080
@@ -63,6 +70,10 @@ output.results/data/sector_sentiment_signal.csv.rows,20120
 output.results/data/sector_sentiment_signal.csv.sha256,55c2ef0fe17a33db3de57183f000d9cba1bd681709d9978bdef950f5848437b7
 output.results/data/fusion_sector_multipliers.csv.rows,360
 output.results/data/fusion_sector_multipliers.csv.sha256,49d53c56af67c7d40443e4ae8e18dedd2a08a6f41bfe03ff059978d91e2b85f7
+output.results/data/fund_catalog.csv.rows,13
+output.results/data/fund_catalog.csv.sha256,c599963a5947b1a9d5018c6552e87bc27ec77f3fc1e4a259a968374a3cd177bf
+output.results/data/fund_current_holdings.csv.rows,530
+output.results/data/fund_current_holdings.csv.sha256,b120fd9fbe0954270c4e6430d739b67183aabe9e6af92d918fd0853851c9240a
 output.results/tables/performance_metrics.csv.rows,13
 output.results/tables/performance_metrics.csv.sha256,3d0469c46389c5efcefea0f7a628ec7fb5ef52f000d615f793c477f9ec6c4e85
 output.results/tables/solver_audit.csv.rows,564
@@ -89,5 +100,5 @@ output.results/figures/fusion_growth_of_one.png.bytes,206811
 output.results/figures/fusion_growth_of_one.png.sha256,7db9563df291b06f1f202d24e7976a9150a5d1d8b4cb38cebbed2b75a50feb69
 output.results/figures/fusion_drawdown.png.bytes,196796
 output.results/figures/fusion_drawdown.png.sha256,f5292007a75c37b777154452deaf5eb1e84ba29ec4681c5e44b50176818a0d23
-output.results/figures/fusion_sector_multiplier_activity.png.bytes,227424
-output.results/figures/fusion_sector_multiplier_activity.png.sha256,2953d764a74862170e436cc69a337896e0a12c8d51e7ef5ab51d12716398b3b0
+output.results/figures/fusion_sector_multiplier_activity.png.bytes,225901
+output.results/figures/fusion_sector_multiplier_activity.png.sha256,9985f589a0dbe7a5b3d20c38a8fb45d1863d7908733ea01ed4e0635969ab994a
