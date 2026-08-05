@@ -1,6 +1,6 @@
 # Project B predeclared decisions
 
-Status: portfolio methodology is locked and implemented through Interaction 002. Portfolio outputs exist and passed technical review, but no economic “best fund” conclusion has been approved. The sentiment decisions below remain a predeclared design until Interaction 003 is implemented and reviewed; fusion, figures, report, and app work remain pending.
+Status: portfolio and sentiment methodologies are locked, implemented, and technically reviewed through Interaction 003. No economic conclusion or fusion result has been approved; fusion, figures, report, and app work remain pending.
 
 ## Product
 
@@ -93,11 +93,20 @@ Status: portfolio methodology is locked and implemented through Interaction 002.
 
 ## Fusion design
 
-- Base fund: Equity Risk Parity.
+- Primary augmented fund identity:
+  - fund ID: `equity_risk_parity_sentiment`;
+  - universe: `equity`;
+  - method: `risk_parity_sentiment`;
+  - base fund: `equity_risk_parity`;
+  - sentiment model: `finance_vader` only.
+- Timing: use the `finance_vader` row from the causal sector-sentiment signal whose `effective_date` equals the base portfolio target's `effective_date`. For an age-zero signal, `source_date` equals the portfolio `decision_date`, and the target becomes investable on the following observed equity date. A carried signal must have a strictly earlier `source_date`. Every active `source_date` must be on or before the decision date; no later signal may affect the target.
+- Prohibited inputs: `plain_vader` and `descriptive_full_sample_z` must not enter the primary overlay.
 - Extension: coverage-aware finance-sentiment overlay at the sector level.
 - Fixed tilt strength: `lambda = 0.10`; it will not be tuned on the full OOS sample.
 - For sector `s` and decision date `t`, set `z_bounded = clip(causal_lagged_z, -2, 2)` and `multiplier = clip(1 + lambda * effective_coverage * z_bounded, 0.80, 1.20)`. A missing signal uses multiplier 1.0.
 - Multiply every base Equity Risk Parity stock weight by its sector multiplier, renormalise, and enforce the same long-only maximum-weight constraint using a deterministic capped-simplex projection.
+- The augmented target is held and drifted independently, and its turnover is calculated against its own pre-trade drifted weights. Its daily return is recalculated from its own holdings and the underlying equity returns, not copied from the base fund.
+- If no sector has an active signal at a rebalance, the augmented target equals the exact base target within numerical tolerance.
 - Evaluate base versus augmented annualised performance, Sharpe, maximum drawdown, gross return, turnover, trading cost, and net return over exactly the same OOS dates. A negative result remains reportable and does not justify retuning.
 
 ## Innovation claims to test later
