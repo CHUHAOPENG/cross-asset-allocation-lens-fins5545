@@ -1,6 +1,6 @@
 # Project B predeclared decisions
 
-Status: portfolio and sentiment methodologies are locked, implemented, and technically reviewed through Interaction 003. No economic conclusion or fusion result has been approved; fusion, figures, report, and app work remain pending.
+Status: portfolio and sentiment methodologies are locked, implemented, and technically reviewed through Interaction 003. Interaction 004 implemented the fixed fusion design and focused fusion figures, which remain pending review. No economic conclusion or fusion result has been approved; report and app work remain pending.
 
 ## Product
 
