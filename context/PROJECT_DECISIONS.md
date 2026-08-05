@@ -1,6 +1,6 @@
 # Project B predeclared decisions
 
-Status: portfolio, sentiment, and fusion methodologies are locked, implemented, and technically reviewed through Interaction 004. The fixed overlay produced a modest negative result in this OOS sample and higher turnover than base Equity Risk Parity. This is descriptive OOS evidence, not proof for or against sentiment predictability, and it does not justify retuning. App work is beginning; the final report, economic narrative, and deployment remain pending.
+Status: portfolio, sentiment, fusion, and app are locked and reviewed through Interaction 005 plus the post-review visual correction. The fixed overlay produced a modest negative result in this OOS sample and higher turnover than base Equity Risk Parity. This remains descriptive evidence, not proof for or against sentiment predictability, and it does not justify retuning. Final reporting and hand-in packaging are now being completed; deployment and the student's final personal report review remain pending.
 
 ## Product
 
@@ -127,10 +127,11 @@ These are design claims only until implemented and evaluated.
 - Monthly Reset: allow sleeve values to drift daily, then reset them to the selected target allocation on the first available common-period date of each new calendar month using the previous total portfolio value.
 - The allocation simulator applies no additional cross-fund transaction cost, management fee, or tax. This limitation is disclosed visibly.
 
-## Unresolved implementation details
+## Final report presentation decisions
 
-The following must be resolved in a later documented decision before code or empirical output relies on them:
+- The report compares all 13 funds in the summary table and return–risk figure. For path charts it holds the method constant by selecting Risk Parity from Equity, Crypto, and Combined, then shows the fixed sentiment-augmented Equity Risk Parity fund separately. This is a presentation choice, not a new fund ranking or strategy.
+- Materials is the sentiment example because its genuine missing-sector dates make the approved missing-news rule visible. It is not selected as evidence of superior predictability.
+- The allocation example is an equal 25% Buy & Hold allocation across the same four displayed funds, over their exact common OOS intersection. It is explicitly illustrative, is not optimised or recommended, and adds no fee, tax, or cross-fund transaction cost.
+- Report figures and tables are presentation transforms of committed analytical outputs. They do not alter the locked methodology, parameters, canonical analytical CSVs, or approved chart data.
 
-1. Final report exhibit mapping and narrative choices. These presentation choices must not alter the methodology.
-
-No unresolved item may be filled in by convenience after viewing full-sample results. Record the decision, rationale, and tests first.
+These choices resolve the final presentation item without using full-sample results to retune an analytical rule. No analytical or app implementation detail remains open in this interaction.

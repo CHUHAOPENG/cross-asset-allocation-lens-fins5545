@@ -1,10 +1,10 @@
 # AI notes
 
-I used ChatGPT for course-material review, project planning, and independent audit. I used Codex for repository setup, documentation, and the implemented data foundation, walk-forward portfolio engine, Rule A mapping, causal sector-sentiment pipeline, and fixed coverage-aware fusion overlay. I remain responsible for directing, reviewing, testing, and approving AI-assisted work.
+I used ChatGPT for course review, planning, audit, and final-review guidance. I used Codex for implementation and documentation, including repository setup, the data foundation, walk-forward portfolio engine, Rule A mapping, causal sector-sentiment pipeline, fixed coverage-aware fusion overlay, investor app, report draft, and hand-in preparation. I remain responsible for directing, reviewing, testing, and approving AI-assisted work.
 
-After independent technical review, I, CHUHAO PENG, accepted the implemented portfolio engine, the Interaction 003 sentiment pipeline, and the technical implementation of Interaction 004's fixed coverage-aware fusion overlay. In this sample the overlay did not outperform the base Equity Risk Parity fund and had higher turnover. I will keep that negative result visible and will not use it to retune the overlay.
+After independent technical review, I, CHUHAO PENG, accepted the implemented portfolio engine, the Interaction 003 sentiment pipeline, and the technical implementation of Interaction 004's fixed coverage-aware fusion overlay. Interaction 005 and its post-review visual correction also passed technical and visual review, so the portfolio, sentiment, fusion, and app are implemented, reviewed, and frozen. In this OOS sample the overlay underperformed the base Equity Risk Parity fund and had higher turnover. I kept that negative result visible and did not use it to retune the overlay.
 
-App work is beginning. The final report, economic narrative, deployment, and any best-fund conclusion remain pending.
+The final report draft and submission packaging are being completed now. Deployment, the final course-formatted report, my personal final economic interpretation, and any personally approved submission remain pending.
 
 Interaction 001 generated no analytical result. Its smoke-test failure occurred because the official data ZIP was not available locally. No data were fabricated, and no prohibited download occurred.
 

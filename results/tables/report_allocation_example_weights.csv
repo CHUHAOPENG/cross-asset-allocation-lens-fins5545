@@ -1,0 +1,5 @@
+fund_id,display_name,illustrative_weight
+equity_risk_parity,Equity — Risk Parity,0.25
+crypto_risk_parity,Crypto — Risk Parity,0.25
+combined_risk_parity,Combined — Risk Parity,0.25
+equity_risk_parity_sentiment,Equity — Risk Parity + Sentiment,0.25

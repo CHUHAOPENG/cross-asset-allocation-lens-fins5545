@@ -1,46 +1,99 @@
-# FinTech Project - Part B
+# Cross-Asset Allocation Lens
 
-> FIRST: rename this folder to <yourZID>_projectB (for example z1234567_projectB)
-> and move it into fins-agent/fins2026/. The folder name carrying your zID is your
-> submission.
+Cross-Asset Allocation Lens is a FINS5545 Project B repository containing an audited walk-forward fund engine, a coverage-aware sector-sentiment extension, a fixed sentiment-fusion experiment, and a Streamlit investor interface. It compares 13 systematic fund prototypes across Equity, Crypto, and Combined universes.
 
-Part B: funds, sentiment, and the app (DFF Stations 3-4). This folder is also your
-public GitHub repository; the app entrypoint is streamlit_app.py at the root.
+The principal empirical finding is deliberately unrevised: the predeclared sentiment overlay did not improve base Equity Risk Parity over the common 2021–2023 OOS sample and produced higher turnover. The app and report keep that negative result visible.
 
-## How to run
+This project is analytical and educational only. It is not personalised financial advice, a live trading system, or a promise of future returns.
 
-    pip install -r requirements.txt -r requirements-dev.txt   # dev adds vaderSentiment 3.3.2
-    python scripts/run_part_b.py            # reproduces your results into results/
-    streamlit run streamlit_app.py          # runs the app locally
+## Quick start
 
-Load raw data through src/data_access.py (see context/DATA_GUIDE.md); never commit
-raw data. The deployed app, by contrast, reads your precomputed artifacts from
-results/ - those ARE committed.
+The repository is designed for Python 3.11 or later. From the project root, create and activate a virtual environment, then choose one installation path.
 
-## What is here
+App-only installation:
 
-- streamlit_app.py    the app entrypoint (repo root)
-- .streamlit/         app config
-- PROJECT_BRIEF.md    the full assignment brief for your course (read this first)
-- src/                your code (data_access is provided; portfolios/sentiment/fusion are yours)
-- scripts/            runnable scripts that reproduce your results
-- results/            your outputs: figures in results/figures/, tables in results/tables/, app data artifacts in results/data/
-- context/            provided data guide and project context (do not edit)
-- report/             your report - see report/OUTLINE.md (author in Word, submit report.pdf)
-- ai/                 your prompt logs and AI notes
-- requirements-dev.txt build/repro-only deps (`vaderSentiment==3.3.2`); keep them out of the deployed app
-- AGENTS.md / CLAUDE.md   replace the stub for your tool (you need just one) with your own
+```bash
+python -m pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
 
-## Deploy + hand in
+Full analytical reproduction and tests:
 
-This folder is its own GitHub repo, independent of fins-agent. Your AI agent can run
-the check and push the repo; the browser deploy is yours (it needs your login). See
-PROJECT_BRIEF.md Appendix D and docs/STUDENT_DEPLOY.md (in this folder). In short:
+```bash
+python -m pip install -r requirements.txt -r requirements-dev.txt
+python scripts/run_part_b.py
+python scripts/build_report_artifacts.py
+pytest -q
+python scripts/check_handin.py
+```
 
-    python scripts/check_handin.py        # your agent can run this
-    # commit your precomputed app artifacts under results/ (the app reads them)
-    # git init in this folder, then push the contents to a NEW private GitHub repo
+`scripts/run_part_b.py` loads only the official course source through `src/data_access.py` and reproduces canonical artifacts under `results/`. It may require network access unless the official ZIP is already available through the loader's cache. It never substitutes fabricated data.
 
-Then YOU connect the repo on share.streamlit.io (entrypoint streamlit_app.py). At
-hand-in, make the repo PUBLIC, submit the live URL + repo link, and also zip this
-whole folder and upload the zip to Moodle.
+`scripts/build_report_artifacts.py` is presentation-only. It reads committed analytical outputs, creates the report figures and tables, and calculates the report's explicitly illustrative allocation. It does not load raw data, fit models, optimise portfolios, score sentiment, or rerun fusion.
+
+## What the project contains
+
+- `streamlit_app.py` — five-tab investor interface reading committed outputs only.
+- `.streamlit/config.toml` — explicit accessible light theme and local server settings.
+- `src/` — data cleaning, return construction, portfolio methods, sentiment, fusion, and app utilities.
+- `scripts/run_part_b.py` — canonical end-to-end analytical runner.
+- `scripts/build_report_artifacts.py` — deterministic report-only presentation builder.
+- `scripts/check_handin.py` — repository hand-in checks.
+- `results/data/` — committed app-ready return, weight, sentiment, and fusion artifacts.
+- `results/tables/` — metrics, audits, manifests, and report tables.
+- `results/figures/` — analytical and report figures.
+- `report/FINAL_REPORT.md` — complete report source with linked evidence and limitations.
+- `tests/` — analytical, timing, integrity, app, and report-artifact regression tests.
+- `context/` — project decisions, data guide, and approved Part A handoff.
+- `ai/` — AI-use notes and verbatim interaction records.
+
+## Analytical design
+
+The base fund set combines three universes with four methods:
+
+| Universe | Calendar and annualisation | Methods |
+|---|---|---|
+| Equity | Observed equity dates; 252 | Equal Weight, Minimum Variance, Risk Parity, Maximum Sharpe |
+| Crypto | Native seven-day dates; 365 | Equal Weight, Minimum Variance, Risk Parity, Maximum Sharpe |
+| Combined | Observed equity dates; 252 | Equal Weight, Minimum Variance, Risk Parity, Maximum Sharpe |
+
+The engine uses an expanding walk-forward OOS schedule, month-end decisions effective on the next observed holding date, long-only fully invested constraints, a dynamic asset cap, fixed covariance/mean shrinkage, recorded solver fallbacks, and a 10-basis-point one-way turnover cost. Missing returns are never filled. Crypto returns are calculated on their native calendar before selection onto equity dates for Combined funds.
+
+News uses conservative Rule A calendar-date mapping followed by an additional one-observed-equity-day trading lag. No supplied news remains missing rather than neutral. The causal sector signal uses expanding standardisation, bounded five-day carry, and coverage decay. The primary overlay uses the frozen finance-VADER signal with fixed `lambda = 0.10`; its parameters are not retuned after observing performance.
+
+The exact locked decisions are recorded in `context/PROJECT_DECISIONS.md`. The reproducibility manifest records the official source checksum, environment, constants, row counts, and canonical output hashes in `results/tables/run_manifest.csv`.
+
+## Application behavior
+
+The app contains five tabs: Start Here, Compare Funds, Fund Fact Sheets, Allocation Lab, and Sentiment & Fusion. It reads precomputed committed files under `results/` and has no imports from the analytical engines or network layer.
+
+The Allocation Lab accepts two to six non-negative fund weights summing to 100% and simulates Buy & Hold or Monthly Reset over the exact common OOS intersection. It does not optimise or recommend an allocation. Fund-level returns include the recorded analytical trading costs, but the simulator applies no additional management fee, tax, or cross-fund transaction cost.
+
+## Reports and evidence
+
+Open [`report/FINAL_REPORT.md`](report/FINAL_REPORT.md) for the full methodology, results, figures, negative fusion finding, limitations, recommendations, and artifact guide. The complete report figure-to-source map is in `results/tables/report_exhibit_catalog.csv`.
+
+The Markdown report remains a source document for final personal review and course formatting. Before submission, CHUHAO PENG must independently check every AI-assisted figure, number, and passage; personally write or rewrite and approve the final economic interpretation and narrative; and convert the approved report to the required PDF format.
+
+## Validation
+
+Run the local hand-in gates from the project root:
+
+```bash
+pytest -q
+python scripts/check_handin.py
+git diff --check
+git status --short
+```
+
+To validate the local app:
+
+```bash
+streamlit run streamlit_app.py --server.headless true
+```
+
+Then check `http://localhost:8501/_stcore/health`. A local pass does not prove that the repository has been pushed, made public, deployed, or submitted.
+
+## Hand-in boundary
+
+The repository excludes raw data, virtual environments, caches, secrets, and local ZIP files. `scripts/make_submission_zip.sh` creates a clean ZIP outside the project directory and validates its archive structure. Publishing the repository, deploying Streamlit, converting the report to the course-required final PDF, and uploading to Moodle remain separate user-controlled steps.

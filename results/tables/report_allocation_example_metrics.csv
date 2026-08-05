@@ -1,0 +1,2 @@
+simulation,method,common_first_date,common_last_date,observations,periods_per_year,excluded_nonfinite_dates,cumulative_return,annualised_return,annualised_volatility,sharpe,max_drawdown
+Illustrative equal-weight four-fund allocation,Buy & Hold,2021-01-04,2023-12-29,753,252,0,0.3313467147,0.1493763267,0.3259476117,0.4582832373,-0.5059418559
