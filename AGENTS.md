@@ -33,4 +33,5 @@
 - Store derived app data in `results/data/`, report tables in `results/tables/`, and figures in `results/figures/`. The Streamlit app must read precomputed artifacts only; it must not run optimisers, backtests, VADER, or data downloads.
 - Add focused tests for calendars, lagging, training/holding boundaries, constraints, fallback, turnover/costs, aggregation, missing-news semantics, standardisation, and output schemas. Run `pytest -q` and `python scripts/check_handin.py` before a milestone.
 - Keep runs deterministic where practical. Record commands, inputs, parameters, warnings, test results, exact changed files, and verification/corrections in `ai/`. The student must review AI-written code, numbers, claims, and report prose.
+- Preserve each substantive user prompt verbatim in its interaction log, maintain `ai/AI_NOTES.md` as a living first-person summary, and never claim student authorship or approval before it is actually provided.
 - Do not commit secrets, caches, OS metadata, editor backups, or raw data. Do not push, deploy, publish, or claim GitHub/Streamlit/Moodle completion without explicit authorisation and direct verification.
