@@ -6,6 +6,11 @@ The principal empirical finding is deliberately unrevised: the predeclared senti
 
 This project is analytical and educational only. It is not personalised financial advice, a live trading system, or a promise of future returns.
 
+## Links
+
+- **Public GitHub repository:** https://github.com/CHUHAOPENG/cross-asset-allocation-lens-fins5545
+- **Streamlit application:** Pending final Community Cloud deployment
+
 ## Quick start
 
 The repository is designed for Python 3.11 or later. From the project root, create and activate a virtual environment, then choose one installation path.

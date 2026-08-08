@@ -6,10 +6,10 @@ After independent technical review, I, CHUHAO PENG, accepted the implemented por
 
 I, CHUHAO PENG, have personally reviewed the report's economic interpretations and the regenerated final Word/PDF report. I approve the current report version to proceed to final deployment. Portfolio, sentiment, fusion, app, and report analytics remain frozen.
 
-GitHub publication and Streamlit deployment are now the remaining release steps. Moodle submission remains pending.
+I created and verified the public GitHub repository from my authenticated host Mac terminal as `CHUHAOPENG/cross-asset-allocation-lens-fins5545`. Its visibility is PUBLIC and its default branch is `main`. The Codex sandbox did not perform or independently verify that remote publication. Streamlit Community Cloud deployment and logged-out verification remain pending, as does Moodle submission.
 
 Interaction 001 generated no analytical result. Its smoke-test failure occurred because the official data ZIP was not available locally. No data were fabricated, and no prohibited download occurred.
 
 I independently checked the AI-assisted report's economic interpretation and the regenerated Word/PDF before approving this version for release. I remain responsible for the final deployment and submission actions.
 
-Status: living draft recording final student approval; GitHub publication, Streamlit deployment, and Moodle submission remain to be completed or verified.
+Status: living draft recording final student approval and host-verified public GitHub publication; Streamlit deployment, logged-out app verification, and Moodle submission remain pending.

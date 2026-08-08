@@ -288,3 +288,74 @@ Per Interaction 009, work stopped at the authentication gate. No origin remote w
 - `ai/AI_NOTES.md`
 - `ai/interaction_009_final_approval_and_github_release.md`
 - `context/PROJECT_DECISIONS.md`
+
+## Codex authentication diagnosis
+
+At CHUHAO PENG's direction, Codex checked only whether `GH_TOKEN` and `GITHUB_TOKEN` were set; neither variable was set, and no token value was printed, exposed, copied, or logged. In the same shell, both variables were explicitly unset before rerunning `gh auth status` and `gh api user --jq .login`. GitHub CLI still reported an invalid stored credential for `CHUHAOPENG`, and the API command could not connect. The diagnosis was that the Codex execution environment could not access the authenticated host Mac credential store or GitHub API. Codex stopped without creating, checking, or modifying a remote.
+
+## Host-terminal public GitHub verification
+
+CHUHAO PENG subsequently completed the GitHub publication manually from the authenticated host Mac terminal and directly verified the following facts:
+
+- GitHub account: `CHUHAOPENG`.
+- Public repository URL: https://github.com/CHUHAOPENG/cross-asset-allocation-lens-fins5545
+- Repository coordinate: `CHUHAOPENG/cross-asset-allocation-lens-fins5545`.
+- Visibility: PUBLIC.
+- Default branch: `main`.
+- Origin URL: `https://github.com/CHUHAOPENG/cross-asset-allocation-lens-fins5545.git`.
+- Verified pre-continuation local and remote `main` commit: `230ffa810e77fb89e7030604a5f88e28a01cdf12`.
+- Host-terminal result: `SUCCESS: local main and remote main match.`
+
+These are user-supplied, host-terminal-verified publication facts. The Codex sandbox did not perform or independently reproduce the remote verification and did not attempt GitHub API access again.
+
+## Streamlit Community Cloud coordinates
+
+- Repository: `CHUHAOPENG/cross-asset-allocation-lens-fins5545`
+- Branch: `main`
+- Main file path: `streamlit_app.py`
+- Python: `3.13`
+
+`requirements.txt` and `.streamlit/config.toml` are at the repository root. The app requires no secrets, performs no runtime network calls, and reads committed result artifacts only. The final `streamlit.app` URL must remain pending until Community Cloud deployment and logged-out verification are completed.
+
+## Pre-deployment ZIP
+
+Codex used `scripts/make_submission_zip.sh` to create:
+
+`/Users/chris/Desktop/fins 5545/fins-agent/fins2026/z5711503_projectB_predeployment_20260808.zip`
+
+The first invocation supplied a relative output path. Because the script changes directory internally, it created the archive one directory above the intended location and then returned exit code 9 when its outer validation resolved the same relative path differently. Codex identified and removed only that newly created misplaced archive, then reran the unchanged script with the absolute intended path.
+
+Final archive checks:
+
+- `unzip -t`: passed with no compressed-data errors.
+- Archive entries: 110.
+- `.git`: 0.
+- `.DS_Store`: 0.
+- `__MACOSX`: 0.
+- `__pycache__`: 0.
+- `*.pyc`: 0.
+- Nested ZIP files: 0.
+- `z5711503_projectB/report/report.pdf`: present.
+- File size: 15,675,433 bytes.
+- SHA-256: `0c2676401b21e7f64139ff7e970dda7e21646e1bd1f24ee2e581257c71ad64dd`.
+
+This archive is the pre-deployment package, not the final Moodle ZIP, because the verified Streamlit URL remains pending.
+
+## Continuation validation
+
+- `pytest -q`: 82 passed with two existing NumPy timedelta deprecation warnings.
+- Test-created `__pycache__`, `*.pyc`, and pytest-cache files were removed before the hand-in checker.
+- `python scripts/check_handin.py`: 23/23 checks passed.
+- `git diff --check`: passed.
+- Deployment files: root `requirements.txt` and `.streamlit/config.toml` both present.
+- Runtime review: `streamlit_app.py` and `src/app_utils.py` use no Streamlit secrets, environment credential lookup, analytical-engine imports, network library, or HTTP URL; they read committed results only.
+- Local Git configuration: `origin` is `https://github.com/CHUHAOPENG/cross-asset-allocation-lens-fins5545.git`; before these local documentation changes, local `HEAD` and the locally stored `origin/main` reference were both `230ffa810e77fb89e7030604a5f88e28a01cdf12`. Remote equality remains attributed to CHUHAO PENG's authenticated host-terminal verification.
+
+## Continuation changed-file list
+
+- `README.md`
+- `ai/AI_NOTES.md`
+- `ai/interaction_009_final_approval_and_github_release.md`
+- `context/PROJECT_DECISIONS.md`
+
+Codex is authorised to create the local commit `docs: record public repository link` and then stop. Codex will not push this continuation; CHUHAO PENG will perform the final push from the authenticated host Mac terminal.
