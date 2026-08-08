@@ -6,10 +6,12 @@ After independent technical review, I, CHUHAO PENG, accepted the implemented por
 
 I, CHUHAO PENG, have personally reviewed the report's economic interpretations and the regenerated final Word/PDF report. I approve the current report version to proceed to final deployment. Portfolio, sentiment, fusion, app, and report analytics remain frozen.
 
-I created and verified the public GitHub repository from my authenticated host Mac terminal as `CHUHAOPENG/cross-asset-allocation-lens-fins5545`. Its visibility is PUBLIC and its default branch is `main`. The Codex sandbox did not perform or independently verify that remote publication. Streamlit Community Cloud deployment and logged-out verification remain pending, as does Moodle submission.
+I created and verified the public GitHub repository from my authenticated host Mac terminal as `CHUHAOPENG/cross-asset-allocation-lens-fins5545`. Its visibility is PUBLIC and its default branch is `main`. The Codex sandbox did not perform or independently verify that remote publication. The Streamlit Community Cloud application is now live at `https://cross-asset-allocation-lens-fins5545.streamlit.app/`.
+
+Interaction 010A audited the public production app while logged out. It passed public access and all five tabs with only two non-blocking cosmetic findings: some Fusion table values use raw decimal presentation, and the widest tables need modest internal horizontal scrolling. No console error or warning, uncaught Streamlit exception, failed visual asset, blocking issue, or important issue was observed. Request-level network response codes were not individually enumerated. No further analytical or app change was recommended before final release.
 
 Interaction 001 generated no analytical result. Its smoke-test failure occurred because the official data ZIP was not available locally. No data were fabricated, and no prohibited download occurred.
 
 I independently checked the AI-assisted report's economic interpretation and the regenerated Word/PDF before approving this version for release. I remain responsible for the final deployment and submission actions.
 
-Status: living draft recording final student approval and host-verified public GitHub publication; Streamlit deployment, logged-out app verification, and Moodle submission remain pending.
+Status: living draft recording final student approval, public GitHub publication, live Streamlit deployment, and the passed read-only production audit; Moodle upload is the only remaining release action after final package verification.

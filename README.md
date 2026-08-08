@@ -9,7 +9,7 @@ This project is analytical and educational only. It is not personalised financia
 ## Links
 
 - **Public GitHub repository:** https://github.com/CHUHAOPENG/cross-asset-allocation-lens-fins5545
-- **Streamlit application:** Pending final Community Cloud deployment
+- **Live Streamlit application:** https://cross-asset-allocation-lens-fins5545.streamlit.app/
 
 ## Quick start
 
@@ -107,4 +107,4 @@ Then open `/_stcore/health` on the local address shown by Streamlit. A local pas
 
 ## Hand-in boundary
 
-The repository excludes raw data, virtual environments, caches, secrets, and local ZIP files. `scripts/make_submission_zip.sh` creates a clean ZIP outside the project directory and validates its archive structure. Publishing the repository, deploying Streamlit, verifying the public app URL while logged out, and uploading to Moodle remain separate release steps.
+The repository excludes raw data, virtual environments, caches, secrets, and local ZIP files. `scripts/make_submission_zip.sh` creates a clean ZIP outside the project directory and validates its archive structure. Public GitHub publication, Streamlit deployment, and logged-out production verification are complete. Uploading the verified final ZIP and submitting the two public URLs to Moodle remains the final user-controlled release step.

@@ -5,9 +5,15 @@ is `streamlit_app.py` at its root. The app reads committed artifacts under
 `results/`; it does not run an analytical engine, load raw data, or make a network
 request at runtime.
 
-Repository creation, pushing, the public setting, and Streamlit Community Cloud
-deployment remain user-controlled actions. Do not run the commands below until
-CHUHAO PENG has reviewed the Word and PDF reports.
+## Verified release status
+
+- Public GitHub repository: https://github.com/CHUHAOPENG/cross-asset-allocation-lens-fins5545
+- Live Streamlit application: https://cross-asset-allocation-lens-fins5545.streamlit.app/
+- Deployment coordinates: repository `CHUHAOPENG/cross-asset-allocation-lens-fins5545`, branch `main`, main file `streamlit_app.py`.
+- Streamlit Community Cloud runtime: Python 3.14.
+- Local analytical and reproduction environment: Python 3.13. The analytical manifest remains unchanged.
+- Logged-out production audit: PASS WITH MINOR ISSUES; no code or analytical change was recommended.
+- Remaining action: upload the verified final package and submit the two public URLs to Moodle.
 
 ## What you submit (Part B, Station 4)
 - A **live public Streamlit Community Cloud URL**.
@@ -27,11 +33,7 @@ CHUHAO PENG has reviewed the Word and PDF reports.
    streamlit run streamlit_app.py --server.headless true
    ```
 
-   In another terminal, check the health endpoint:
-
-   ```bash
-   curl --fail --silent --show-error http://127.0.0.1:8501/_stcore/health
-   ```
+   In another terminal, check `/_stcore/health` on the local address reported by Streamlit.
 
 2. **Create the public GitHub repository and add `origin`.** These commands derive
    the authenticated account name, so no fabricated URL is needed:
@@ -62,7 +64,7 @@ CHUHAO PENG has reviewed the Word and PDF reports.
 5. **Deploy through Streamlit Community Cloud.** The current official Community
    Cloud workflow is browser-based. Sign in at `https://share.streamlit.io`, choose
    **Create app**, select the authenticated `z5711503_projectB` repository, choose branch
-   `main`, set the main file path to `streamlit_app.py`, select Python 3.13, and
+   `main`, set the main file path to `streamlit_app.py`, select Python 3.14, and
    deploy. Record the real URL only after Streamlit reports success.
 
 6. **Verify the published result.** Open the GitHub repository and the Streamlit
