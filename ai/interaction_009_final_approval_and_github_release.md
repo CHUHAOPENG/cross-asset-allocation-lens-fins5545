@@ -254,3 +254,37 @@ Interaction 009 authorises creation and verification of the named public GitHub 
 ## Release state before publication
 
 At the start of this interaction, the local repository was on `main` at `e2d571ce8efbb8e6b1d55dfb34ceaef2360d80e0` with a clean working tree. GitHub authentication, repository-name availability, remote creation, publication, and ZIP preparation had not yet been performed or claimed.
+
+## Pre-push safety audit and checks
+
+The approval record was committed locally as `2e9646c` (`docs: record final student approval`). The pre-push review found that README still contained a literal localhost health URL and stale wording that personal report approval was pending. README was corrected without changing the app, report, results, or analytics, then committed locally as `c634960` (`docs: align approved release status`).
+
+Commands and results before the authentication check:
+
+- `git status --short`: clean.
+- `git branch --show-current`: `main`.
+- `report/report.pdf`: exists.
+- DOCX and PDF content checks: both contain `8 August 2026`; neither contains `Pending confirmation`, a private `/Users/chris` path, or a localhost URL.
+- `git ls-files` hygiene checks: no tracked raw project-data ZIP, `.DS_Store`, `__MACOSX`, `__pycache__`, `.pyc`, local ZIP, recognised secrets file, or recognised credential token.
+- README/report release-surface scan: no `/Users/chris`, `localhost`, or `127.0.0.1` path or URL remained. Verbatim AI prompt records and internal provenance records were preserved as required.
+- `CLAUDE.md`: confirms truthfully that Claude Code was not used and Codex was the implementation agent.
+- Required report, app, results, configuration, and AI-log files: tracked and committed.
+- Frozen Interaction 004 analytical verification: 20/20 hashes matched.
+- `pytest -q`: 82 passed with two existing NumPy timedelta deprecation warnings.
+- The first `python scripts/check_handin.py` run reported one real failure for a local `.DS_Store` and one cache reminder after testing. The exact transient `.DS_Store`, `__pycache__`, `.pyc`, and pytest-cache targets were removed; the rerun passed 23/23 checks.
+- `git diff --check`: passed.
+
+## GitHub authentication blocker
+
+- `gh --version`: GitHub CLI 2.93.0 is installed.
+- `gh auth status`: failed for active default account `CHUHAOPENG` because its stored token is invalid.
+- GitHub CLI's required recovery command is `gh auth login -h github.com`.
+
+Per Interaction 009, work stopped at the authentication gate. No origin remote was inspected or added, no repository-name availability check was attempted, no GitHub repository or public URL was created or claimed, no push occurred, and no pre-deployment ZIP was created. GitHub publication, README link insertion, ZIP preparation, Streamlit deployment, and Moodle submission remain pending.
+
+## Changed files before the authentication stop
+
+- `README.md`
+- `ai/AI_NOTES.md`
+- `ai/interaction_009_final_approval_and_github_release.md`
+- `context/PROJECT_DECISIONS.md`
