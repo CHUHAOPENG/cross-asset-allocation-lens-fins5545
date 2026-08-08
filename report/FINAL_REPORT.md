@@ -6,7 +6,7 @@
 
 Cross-Asset Allocation Lens is an educational prototype for comparing systematic Equity, Crypto, and Combined funds, examining a coverage-aware news-sentiment signal, and testing user-specified allocations over a common out-of-sample (OOS) period. The project produces 13 funds: Equal Weight, Minimum Variance, Risk Parity, and Maximum Sharpe in each of the three universes, plus a fixed sentiment-augmented Equity Risk Parity fund.
 
-The main result is not a single “best fund.” The 2021–2023 OOS evidence shows a clear return–risk trade-off across universes and methods. Crypto funds delivered the highest sample returns but also annualised volatility of 72.5%–81.9% and maximum drawdowns of 72.7%–81.6%. Within Equity and Combined, Minimum Variance delivered the lowest volatility and shallowest drawdown, while Equal Weight or Risk Parity delivered stronger sample Sharpe ratios. Maximum Sharpe did not dominate: it had the highest turnover in both Equity and Combined and weaker net performance than their Equal Weight and Risk Parity counterparts.
+The main result is not a single “best fund” because “best” depends on the objective. Crypto Minimum Variance recorded the highest sample Sharpe among the 13 funds (0.934), but it also suffered a -72.73% maximum drawdown. Equity Minimum Variance produced the lowest volatility within Equity (12.70%), while Combined Risk Parity produced the highest Sharpe within Combined (0.774). These outcomes show a clear return–risk trade-off across universes and methods rather than a universally best fund. Maximum Sharpe did not dominate: it had the highest turnover in both Equity and Combined and weaker net performance than their Equal Weight and Risk Parity counterparts.
 
 The predeclared sentiment extension also produced a useful negative result. Relative to base Equity Risk Parity over the identical 753-date OOS period, the fixed coverage-aware overlay reduced net cumulative return by 1.19 percentage points, reduced net Sharpe from 0.713 to 0.694, slightly deepened maximum drawdown, and increased turnover by 0.522. The rule was not retuned after observing that outcome. This is descriptive OOS evidence for this dataset and specification, not a test of statistical significance and not proof that sentiment is generally useless.
 
@@ -46,6 +46,8 @@ At each decision, an asset must have a valid return on the decision date and eno
 
 The covariance matrix is the sample covariance with fixed 10% diagonal shrinkage. Maximum Sharpe uses expanding arithmetic means shrunk 50% toward their cross-sectional mean. The risk-free rate is zero. Minimum Variance, Risk Parity, and Maximum Sharpe use SciPy SLSQP with fixed solver tolerances. A solver failure is never silently ignored: the engine reuses the previous feasible target if it remains feasible, otherwise it applies capped Equal Weight, and logs the event. Five fallback events occurred in Crypto Risk Parity; all other reported base funds record zero fallbacks.
 
+The methods draw on established portfolio ideas without claiming to replicate the cited papers exactly. Minimum Variance follows the mean–variance tradition of Markowitz (1952), the performance ratio underlying Maximum Sharpe follows Sharpe (1966), and Risk Parity seeks equally weighted risk contributions in the spirit of Maillard, Roncalli, and Teiletche (2010). Equal Weight is retained as a transparent 1/N benchmark, consistent with the caution from DeMiguel, Garlappi, and Uppal (2009) that optimised portfolios can struggle to outperform naive diversification OOS.
+
 ### 3.2 Trading costs and performance measures
 
 The initial investment has turnover 1.0. Subsequent one-way turnover is half the sum of absolute changes between a new target and the pre-trade drifted portfolio across the union of old and new assets. Trading cost equals 0.001 times turnover, or 10 basis points one way. On effective rebalance dates, net return is `(1 - cost) × (1 + gross return) - 1`; otherwise net return equals gross return.
@@ -80,11 +82,11 @@ The complete machine-readable table is [`report_fund_summary.csv`](../results/ta
 
 ## 4. OOS fund evidence
 
-The Equity results illustrate that an optimiser label is not a performance guarantee. Equal Weight achieved the highest Equity net Sharpe (0.815) and cumulative return (42.44%). Minimum Variance achieved its stated risk objective: the lowest Equity volatility (12.70%) and shallowest maximum drawdown (-17.23%), but with a lower annualised return. Risk Parity occupied a middle position. Maximum Sharpe had the highest Equity turnover (4.359) and a lower realised net Sharpe (0.461) than the other three Equity funds. Expected-return estimates are noisy, so an ex-ante maximum-Sharpe objective need not deliver the highest realised OOS Sharpe.
+The Equity results illustrate that an optimiser label is not a performance guarantee. Equal Weight achieved the highest Equity net Sharpe (0.815) and cumulative return (42.44%). Minimum Variance achieved its stated risk objective: the lowest Equity volatility (12.70%) and shallowest maximum drawdown (-17.23%), but with a lower annualised return. Risk Parity occupied a middle position. Maximum Sharpe had the highest Equity turnover (4.359) and a lower realised net Sharpe (0.461) than the other three Equity funds. The result is consistent with noisy expected-return estimates: Maximum Sharpe optimises an estimated ex-ante objective, which does not guarantee the highest realised OOS Sharpe. Its observed higher turnover and binding constraints may also matter, but this design does not identify a single causal mechanism.
 
 The Combined results follow a similar pattern. Risk Parity produced the highest Combined net Sharpe (0.774), narrowly above Equal Weight (0.757). Minimum Variance again delivered the lowest volatility and shallowest drawdown, while Maximum Sharpe produced the highest turnover and deepest Combined drawdown. Adding crypto to the universe did not create a uniformly superior outcome: risk was lower than in Crypto-only funds but higher than in comparable Equity funds for Equal Weight and Risk Parity.
 
-Crypto outcomes require the strongest caution. Minimum Variance had the highest sample Sharpe (0.934) and cumulative return (244.06%), yet still experienced a -72.73% maximum drawdown. The other Crypto funds drew down about 80%. High sample return therefore came with loss paths that many investors could not tolerate. The three-year window is also too short to establish a stable long-run crypto risk premium.
+Crypto outcomes require the strongest caution. Minimum Variance had the highest sample Sharpe (0.934) and cumulative return (244.06%), yet still experienced a -72.73% maximum drawdown. The other Crypto funds drew down about 80%. High sample return therefore came with loss paths that many investors could not tolerate. As arithmetic break-even calculations rather than forecasts, recovering from a -72.73% drawdown requires approximately +267%, while recovering from a -81.59% drawdown requires approximately +443%; this makes the economic severity of the loss path greater than the drawdown percentage alone may suggest. The three-year window is also too short to establish a stable long-run crypto risk premium.
 
 To make path dependence visible without choosing a different method for each universe, Figures 2 and 3 hold Risk Parity constant across Equity, Crypto, and Combined and show the sentiment overlay separately.
 
@@ -102,7 +104,7 @@ The figure supports a method interpretation, not a stock recommendation. It also
 
 ## 5. Coverage-aware sector sentiment
 
-The baseline model is plain VADER. The main model is an isolated finance-extended VADER using a frozen 29-term approved lexicon. Headline text is scored unchanged so punctuation, negation, contrast, and boosters remain available. The finance extension changed the compound score of 3,860 of 105,330 distinct titles (3.66%) and changed the positive/neutral/negative classification of 1,199 titles at the ±0.05 threshold. These are sensitivity results, not accuracy results: there is no labelled outcome validation showing that a changed score is a better score.
+The general motivation for studying news tone follows research linking media content and investor sentiment (Tetlock, 2007), but that motivation is not evidence that this custom signal predicts returns. The baseline model is plain VADER, a parsimonious rule-based sentiment model (Hutto & Gilbert, 2014). The main model is an isolated finance-extended VADER using a frozen 29-term approved lexicon. Headline text is scored unchanged so punctuation, negation, contrast, and boosters remain available. The finance extension changed the compound score of 3,860 of 105,330 distinct titles (3.66%) and changed the positive/neutral/negative classification of 1,199 titles at the ±0.05 threshold. These are sensitivity results, not accuracy results: there is no labelled outcome validation showing that a changed score is a better score.
 
 Aggregation preserves coverage. Headline scores are averaged to ticker-day, then observed eligible ticker-days are equal-weighted to sector-day. A ticker-day with no supplied headline is missing. A sector-day with no observed ticker sentiment is also missing. Coverage is the share of eligible sector tickers that have at least one supplied mapped headline.
 
@@ -148,7 +150,7 @@ A missing signal receives multiplier 1.0. Stock weights are multiplied by their 
 
 ![Figure 10. Sector multiplier activity under the fixed fusion rule.](../results/figures/fusion_sector_multiplier_activity.png)
 
-The augmented and base return series are highly similar: their correlation is 0.9998 and tracking error is 0.00288. Nevertheless, the small active deviations were not free. The augmented fund had lower terminal wealth, slightly worse drawdown, and higher turnover and trading cost. Figure 11 shows that the latest target changes are modest stock-level reallocations rather than a new portfolio regime.
+The augmented and base return series are highly similar: their correlation is 0.9998 and tracking error is 0.00288, or approximately 0.29% annualised. Nevertheless, the small active deviations were not free. The augmented fund had lower terminal wealth, slightly worse drawdown, and higher turnover and trading cost. Figure 11 shows that the latest target changes are modest stock-level reallocations rather than a new portfolio regime.
 
 ![Figure 11. Largest latest target-weight changes from the fixed overlay, effective 2023-12-01.](../results/figures/report_fusion_latest_weight_changes.png)
 
@@ -184,6 +186,7 @@ The evidence is reproducible within the project, but the economic conclusions re
 - Headline sentiment excludes article bodies and uses supplied timestamps that are not verified publication times. Rule A and the extra trading lag are conservative controls, not proof of tradability.
 - News coverage is incomplete and uneven. Missing supplied news is missing coverage, not neutral sentiment and not proof of no economically relevant news.
 - The finance lexicon changes scores but has no separately labelled validation of semantic or predictive accuracy.
+- The supplied 50-equity/10-crypto asset universe is treated as fixed, and the project does not verify point-in-time constituent membership. Selection or survivorship bias therefore cannot be ruled out, but it is not shown to exist.
 - The application uses historical, precomputed target weights and returns. It provides no live data, execution, suitability assessment, or personalised advice.
 
 ## 9. Recommendations for the next empirical cycle
@@ -194,11 +197,11 @@ Pre-register any alternative fusion rule, parameter grid, and success metric usi
 
 ### Recommendation 2 — test implementation sensitivity before investor use
 
-Recalculate fund and allocation outcomes across plausible spreads, fees, slippage, taxes, and capacity assumptions. Because Maximum Sharpe and the fixed overlay produced higher turnover in this sample, cost sensitivity could materially change their ranking. A production decision should also include liquidity and exchange/custody constraints.
+In a future empirical cycle, recalculate fund and allocation outcomes across a predeclared one-way transaction-cost grid of 10, 25, and 50 basis points, then recheck fund rankings across that range. These are proposed future sensitivity scenarios, not additional current-project results. The review should also cover plausible spreads, fees, slippage, taxes, capacity, liquidity, and exchange/custody constraints because Maximum Sharpe and the fixed overlay produced higher turnover in this sample.
 
 ### Recommendation 3 — strengthen timing and monitoring controls
 
-Use verified publication timestamps and an authoritative exchange calendar before considering a live signal. Add automated checks for stale/missing data, coverage shifts, solver fallbacks, target concentration, realised tracking error, and model drift. A live process should stop or revert to a documented neutral/base state when these controls fail.
+Use verified publication timestamps and an authoritative exchange calendar before considering a live signal. A production version should predefine data-health and signal-health thresholds before launch. At minimum, it should revert to the base portfolio after the existing five-day maximum stale-signal window, define a minimum effective-coverage threshold before live deployment, and escalate or revert when solver or data-health checks fail. Any future coverage threshold would be a proposed operational control, not a validated optimum. Monitoring should also cover target concentration, realised tracking error, and model drift.
 
 ## 10. Reproducibility and artifact guide
 
@@ -227,8 +230,49 @@ Key evidence files are:
 
 All reported results are historical OOS evidence from the supplied dataset. They are not current, causal, or an investment recommendation.
 
+## References
+
+- DeMiguel, V., Garlappi, L., & Uppal, R. (2009). “Optimal versus Naive Diversification: How Inefficient is the 1/N Portfolio Strategy?” *Review of Financial Studies*, 22(5), 1915–1953.
+- Hutto, C. J., & Gilbert, E. (2014). “VADER: A Parsimonious Rule-Based Model for Sentiment Analysis of Social Media Text.” *ICWSM*, 8(1), 216–225.
+- Maillard, S., Roncalli, T., & Teiletche, J. (2010). “The Properties of Equally Weighted Risk Contribution Portfolios.” *The Journal of Portfolio Management*, 36(4), 60–70.
+- Markowitz, H. (1952). “Portfolio Selection.” *The Journal of Finance*, 7(1), 77–91.
+- Sharpe, W. F. (1966). “Mutual Fund Performance.” *The Journal of Business*, 39(1), 119–138.
+- Tetlock, P. C. (2007). “Giving Content to Investor Sentiment: The Role of Media in the Stock Market.” *Journal of Finance*, 62(3), 1139–1168.
+
 ## Appendix A. All equity-sector sentiment indices
 
 Appendix Figure A1 displays the finance-VADER standalone index for all ten equity sectors on the common 0–100 scale from 2020-01-02 to 2023-12-29. Missing sector sentiment remains a visible gap rather than a neutral value of 50; the figure documents coverage only and does not establish predictability.
 
 ![Appendix Figure A1. Finance-VADER sentiment indices for all ten equity sectors, with genuine missing gaps preserved.](../results/figures/report_all_sector_sentiment_small_multiples.png)
+
+## Appendix D. Allocation evidence
+
+### Appendix Table D1. Illustrative allocation weights
+
+| Fund ID | Display name | Illustrative weight |
+|---|---|---:|
+| equity_risk_parity | Equity — Risk Parity | 25.0% |
+| crypto_risk_parity | Crypto — Risk Parity | 25.0% |
+| combined_risk_parity | Combined — Risk Parity | 25.0% |
+| equity_risk_parity_sentiment | Equity — Risk Parity + Sentiment | 25.0% |
+
+*Source: committed `report_allocation_example_weights.csv`; presentation formatting only.*
+
+### Appendix Table D2. Illustrative allocation metrics
+
+| Metric | Value |
+|---|---:|
+| Simulation | Illustrative equal-weight four-fund allocation |
+| Method | Buy & Hold |
+| Common First Date | 2021-01-04 |
+| Common Last Date | 2023-12-29 |
+| Observations | 753 |
+| Periods Per Year | 252 |
+| Excluded Nonfinite Dates | 0 |
+| Cumulative Return | 33.13% |
+| Annualised Return | 14.94% |
+| Annualised Volatility | 32.59% |
+| Sharpe | 0.458 |
+| Max Drawdown | -50.59% |
+
+*Source: committed `report_allocation_example_metrics.csv`; presentation formatting only.*

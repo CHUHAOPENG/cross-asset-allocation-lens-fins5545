@@ -1,10 +1,10 @@
 # Word/PDF layout guide
 
-This guide prepares `report/FINAL_REPORT.md` for manual formatting in Word and later export to `report/report.pdf`. It does not represent a completed or approved PDF.
+This guide records the formatting rules for `report/FINAL_REPORT.md`, `report/report.docx`, and `report/report.pdf`. CHUHAO PENG completed the Interaction 008 economic-interpretation review, but final visual approval of the regenerated Word/PDF remains pending.
 
 ## Page limit and document structure
 
-- Keep the written narrative to a maximum of **10 pages**. Exhibits may be placed in an appendix so the main body remains concise.
+- Keep the written narrative to a maximum of **10 pages**. References and appendices sit outside that narrative count; exhibits may be placed in an appendix so the main body remains concise.
 - Confirm whether the course counts the title page within the limit; if the rule is ambiguous, use the conservative interpretation.
 - Use a single-column main body on A4 paper. Use a landscape appendix page only where a dense exhibit, especially the all-sector small multiples, remains materially more readable.
 - Keep methodology detail necessary to interpret results in the main body. Move audit-oriented figures and full lookup tables to the appendix.
@@ -18,7 +18,7 @@ Include only verified information:
 - **FINS5545 Project B — Final Report**
 - **CHUHAO PENG**
 - **z5711503**
-- submission date
+- submission date: **8 August 2026**
 - repository URL and deployed Streamlit URL only after they actually exist and have been verified
 
 Do not state that the report is personally approved until CHUHAO PENG has completed the required rewrite/review and approval.
@@ -40,6 +40,8 @@ If the 10-page narrative limit becomes tight, keep Table 1, Figure 1, Table 2, a
 ## Appendix exhibit order
 
 Use this order so the appendix follows the report's analytical flow. Exhibits already retained in the main body do not need to be duplicated.
+
+Place the cited **References** section after the written narrative and before Appendix A. Include only works cited in the report.
 
 ### Appendix A — Sentiment evidence
 
@@ -89,7 +91,7 @@ Use this order so the appendix follows the report's analytical flow. Exhibits al
 
 ## Final checks before exporting `report/report.pdf`
 
-1. CHUHAO PENG personally rewrites or reviews and explicitly approves the final narrative and economic interpretation.
+1. Record that CHUHAO PENG completed the economic-interpretation review, then obtain separate final visual approval after the Interaction 008 Word/PDF regeneration.
 2. Confirm the narrative is no more than 10 pages and the appendix is clearly separated.
 3. Reconcile every displayed number against the committed CSV cited by the report.
 4. Confirm every in-text figure/table reference matches its final caption and page location.
