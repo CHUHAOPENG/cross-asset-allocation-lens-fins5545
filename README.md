@@ -79,7 +79,7 @@ The Allocation Lab accepts two to six non-negative fund weights summing to 100% 
 
 Open [`report/FINAL_REPORT.md`](report/FINAL_REPORT.md) for the Markdown source, [`report/report.docx`](report/report.docx) for the editable course-formatted report, and [`report/report.pdf`](report/report.pdf) for the technically checked PDF export. The complete report figure-to-source map is in `results/tables/report_exhibit_catalog.csv`.
 
-The Word and PDF files have been generated and technically reviewed, but they are not yet claimed as CHUHAO PENG's personally approved final student report. Before submission, CHUHAO PENG must independently check every AI-assisted figure, number, and passage and personally write or rewrite and approve the final economic interpretation and narrative.
+The Word and PDF files have been generated, technically reviewed, and personally reviewed by CHUHAO PENG. The current report version is approved to proceed to final deployment. Portfolio, sentiment, fusion, app, and report analytics remain frozen.
 
 ## Validation
 
@@ -98,8 +98,8 @@ To validate the local app:
 streamlit run streamlit_app.py --server.headless true
 ```
 
-Then check `http://localhost:8501/_stcore/health`. A local pass does not prove that the repository has been pushed, made public, deployed, or submitted.
+Then open `/_stcore/health` on the local address shown by Streamlit. A local pass does not prove that the repository has been pushed, made public, deployed, or submitted.
 
 ## Hand-in boundary
 
-The repository excludes raw data, virtual environments, caches, secrets, and local ZIP files. `scripts/make_submission_zip.sh` creates a clean ZIP outside the project directory and validates its archive structure. Personal report approval, publishing the repository, deploying Streamlit, and uploading to Moodle remain separate user-controlled steps.
+The repository excludes raw data, virtual environments, caches, secrets, and local ZIP files. `scripts/make_submission_zip.sh` creates a clean ZIP outside the project directory and validates its archive structure. Publishing the repository, deploying Streamlit, verifying the public app URL while logged out, and uploading to Moodle remain separate release steps.
